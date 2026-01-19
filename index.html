@@ -3,159 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 专业体态与身材管理系统</title>
+    <title>AI 智能体态分析专家系统</title>
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
-        :root { --primary: #007aff; --text: #1d1d1f; --bg-red: #d12d6c; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; background: var(--bg-red); font-family: -apple-system, system-ui, sans-serif; display: flex; justify-content: center; align-items: flex-end; min-height: 100vh; overflow: hidden; }
+        :root { --apple-blue: #007aff; --apple-gray: #f5f5f7; --apple-text: #1d1d1f; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; padding: 0; background: #d12d6c; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: flex-end; min-height: 100vh; }
         
-        .main-card { width: 100%; height: 98vh; max-width: 600px; background: #ffffff; border-radius: 28px 28px 0 0; padding: 40px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        .card { width: 100%; height: 97vh; max-width: 600px; background: #fff; border-radius: 24px 24px 0 0; padding: 30px 20px; display: flex; flex-direction: column; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); overflow-y: auto; }
         
-        .header { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 20px; }
-        .prog-bg { width: 100%; height: 2px; background: #f2f2f7; margin-bottom: 30px; }
-        .prog-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; width: 5%; }
+        .page { display: none; flex-direction: column; height: 100%; animation: slideUp 0.4s ease-out; }
+        .page.active { display: flex; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 0.85rem; color: #86868b; margin-bottom: 8px; font-weight: 600; }
-        .input-group input, .input-group select { width: 100%; border: 1px solid #e5e5e7; padding: 15px; border-radius: 12px; font-size: 1rem; outline: none; background: #f9f9fb; }
+        .title { font-size: 1.7rem; font-weight: 700; color: var(--apple-text); margin-bottom: 8px; }
+        .subtitle { font-size: 0.95rem; color: #86868b; margin-bottom: 30px; }
 
-        .question-text { font-size: 1.3rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 30px; }
-        .opt-btn { background: #fff; border: 1px solid #e5e5e7; padding: 18px; border-radius: 16px; font-size: 1rem; font-weight: 500; cursor: pointer; margin-bottom: 12px; text-align: left; transition: 0.2s; }
-        .opt-btn:active { background: #f5f5f7; border-color: var(--primary); }
+        .input-box { margin-bottom: 18px; }
+        .input-box label { display: block; font-size: 0.85rem; font-weight: 600; color: #48484a; margin-bottom: 8px; }
+        .input-box input, .input-box select { width: 100%; border: 1.5px solid #e5e5e7; padding: 16px; border-radius: 12px; font-size: 1rem; background: var(--apple-gray); transition: 0.2s; }
+        .input-box input:focus { border-color: var(--apple-blue); background: #fff; }
 
-        .auth-page { text-align: center; padding-top: 30px; }
-        .auth-input { width: 100%; border: none; background: #f2f2f7; padding: 20px; border-radius: 16px; font-size: 1.4rem; font-weight: 700; text-align: center; letter-spacing: 3px; margin: 30px 0; }
+        .q-title { font-size: 1.4rem; font-weight: 700; line-height: 1.3; margin-bottom: 30px; }
+        .opt-btn { background: #fff; border: 1.5px solid #e5e5e7; padding: 20px; border-radius: 16px; font-size: 1.05rem; margin-bottom: 12px; cursor: pointer; text-align: left; }
+        .opt-btn:active { background: var(--apple-gray); border-color: var(--apple-blue); }
 
-        .black-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; border-radius: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: auto; }
-        #result-view { display: none; position: fixed; inset: 0; background: white; z-index: 2000; padding: 30px 24px; overflow-y: auto; }
-        .loader { display: none; text-align: center; color: #86868b; margin: 20px 0; }
+        /* 纯白独立激活页 */
+        .auth-container { text-align: center; padding-top: 60px; }
+        .auth-icon { font-size: 4rem; margin-bottom: 20px; }
+        .auth-input { width: 100%; border: none; background: var(--apple-gray); padding: 22px; border-radius: 18px; font-size: 1.6rem; font-weight: 800; text-align: center; letter-spacing: 6px; margin: 40px 0; color: var(--apple-blue); }
+
+        .btn-primary { width: 100%; background: #000; color: #fff; border: none; padding: 20px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: auto; }
+        
+        #report-view { display: none; position: fixed; inset: 0; background: #fff; z-index: 100; padding: 30px 20px; overflow-y: auto; }
+        .loading-text { display: none; text-align: center; margin-top: 20px; color: #86868b; font-weight: 600; }
     </style>
 </head>
 <body>
 
-<div class="main-card" id="app">
-    <div id="nav">
-        <div class="header" id="title">基础数据采集</div>
-        <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+<div class="card">
+    <div id="p1" class="page active">
+        <div class="title">身材档案采集</div>
+        <div class="subtitle">用于计算 BMI 指数与基础代谢率</div>
+        <div class="input-box"><label>性别</label><select id="sex"><option>女</option><option>男</option></select></div>
+        <div class="input-box"><label>年龄</label><input type="number" id="age" placeholder="25"></div>
+        <div class="input-box"><label>身高 (cm)</label><input type="number" id="h" placeholder="170"></div>
+        <div class="input-box"><label>体重 (kg)</label><input type="number" id="w" placeholder="60"></div>
+        <div class="input-box"><label>期待目标</label><select id="goal"><option>改善圆肩驼背</option><option>减脂塑形</option><option>缓解办公腰酸</option></select></div>
+        <button class="btn-primary" onclick="startQuiz()">开始深度体态测评</button>
     </div>
 
-    <div id="step-base">
-        <div class="input-group"><label>性别</label><select id="base-sex"><option>女</option><option>男</option></select></div>
-        <div class="input-group"><label>年龄</label><input type="number" id="base-age" placeholder="请输入年龄"></div>
-        <div class="input-group"><label>身高 (cm)</label><input type="number" id="base-height" placeholder="如 165"></div>
-        <div class="input-group"><label>体重 (kg)</label><input type="number" id="base-weight" placeholder="如 55"></div>
-        <div class="input-group"><label>目标身材</label><select id="base-goal"><option>减脂瘦身</option><option>体态纠正（气质提升）</option><option>增肌塑形</option><option>产后修复</option></select></div>
-        <button class="black-btn" onclick="startQuiz()">进入体态深度测评</button>
+    <div id="p2" class="page">
+        <div class="q-title" id="q-text"></div>
+        <div id="q-options" style="display:flex; flex-direction:column;"></div>
     </div>
 
-    <div id="step-quiz" style="display:none;">
-        <div id="q-display" class="question-text">加载中...</div>
-        <div id="opts-box" style="display:flex; flex-direction:column;"></div>
-    </div>
-
-    <div id="step-auth" style="display:none;">
-        <div class="auth-page">
-            <span style="font-size:3rem;">🔒</span>
-            <div class="question-text" style="margin-top:20px;">评估已完成</div>
-            <p style="color:#86868b;">请输入 15 位授权码以解锁深度分析报告</p>
-            <input type="text" id="activationCode" class="auth-input" placeholder="请输入授权码">
-            <button class="black-btn" onclick="validate()">解锁 AI 深度报告</button>
-            <div id="loading" class="loader">正在分析身体模型并生成纠正方案...</div>
+    <div id="p3" class="page">
+        <div class="auth-container">
+            <div class="auth-icon">🛡️</div>
+            <div class="title">专家报告已就绪</div>
+            <div class="subtitle">您的体态数据存在多项偏差，请输入授权码解锁</div>
+            <input type="text" id="authCode" class="auth-input" placeholder="授权码" spellcheck="false">
+            <p style="color:#86868b; font-size:0.8rem;">授权码请咨询您的专属顾问</p>
         </div>
+        <button class="btn-primary" onclick="unlock()">即刻解锁纠正计划</button>
+        <div id="loader" class="loading-text">🧬 AI 正在通过解剖学模型生成报告...</div>
     </div>
 </div>
 
-<div id="result-view">
-    <div id="report-content" style="line-height:1.8;"></div>
-    <button onclick="location.reload()" style="width:100%; padding:15px; border:1px solid #eee; background:#fff; border-radius:12px; margin-top:30px;">重新评估</button>
+<div id="report-view">
+    <div id="report-md"></div>
+    <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--apple-gray); border:none; border-radius:12px; margin-top:30px; font-weight:700;">重新测评</button>
 </div>
 
 <script>
-    const DEEP_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
+    // 💡 必须替换：使用中转 API 才能解决报错
+    const API_URL = "https://api.vllm.net/v1/chat/completions"; 
+    const API_KEY = "Bearer sk-你的中转KEY"; 
 
     const questions = [
-        { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["是（头前伸）", "否（正常）", "轻微前伸"] },
-        { q: "自然站立，手掌心的默认朝向？", opts: ["向后（圆肩）", "向大腿侧（正常）", "略微向后"] },
-        { q: "观察锁骨形状？", opts: ["明显的 V 型", "平直一字型", "看不清/不明显"] },
-        { q: "是否有明显的高低肩？", opts: ["左肩高", "右肩高", "基本齐平"] },
-        { q: "后脑勺是否能轻松贴墙？", opts: ["贴不到", "轻松贴到", "贴到但脖子紧"] },
-        { q: "腰部与墙面的空隙？", opts: ["一个拳头（骨盆前倾风险）", "一个手掌（正常）", "完全贴墙（骨盆后倾风险）"] },
-        { q: "小腹是否异常前凸（即便不胖）？", opts: ["非常明显", "轻微", "没有"] },
-        { q: "裤头是否经常一边高一边低？", opts: ["经常是", "否", "没注意过"] },
-        { q: "并脚下蹲，脚后跟能踩实吗？", opts: ["不能（往后倒）", "轻松踩实", "勉强踩实"] },
-        { q: "鞋底磨损位置？", opts: ["外侧多（足外翻）", "内侧多（平足风险）", "均匀"] },
-        { q: "久坐后哪里最酸痛？", opts: ["颈部", "腰椎", "臀腿"] },
-        { q: "是否有翘二郎腿习惯？", opts: ["经常", "偶尔", "不翘"] },
-        { q: "双手后勾能指尖相扣吗？", opts: ["不能", "勉强", "轻松"] },
-        { q: "观察背部肩胛骨？", opts: ["明显凸起（翼状肩）", "平整", "轻微凸起"] },
-        { q: "呼吸时胸口起伏明显吗？", opts: ["非常明显（浅呼吸）", "腹部起伏多", "两者平衡"] },
-        { q: "走路是否经常踢到脚踝或绊倒？", opts: ["经常", "偶尔", "从未"] },
-        { q: "转动脖子是否有响声？", opts: ["响声大", "没响声", "偶尔响"] },
-        { q: "单脚站立闭眼坚持时间？", opts: ["小于5秒", "5-10秒", "10秒以上"] },
-        { q: "每天处理电子产品时长？", opts: ["10h+", "5-10h", "5h-"] },
-        { q: "现在的疼痛情况？", opts: ["有明显痛点", "偶尔酸胀", "无不适"] }
+        { q: "侧身观察：耳垂是否在肩膀垂直线前方？", opts: ["明显前伸（手机颈）", "基本垂直", "轻微前移"] },
+        { q: "自然站立：大拇指的朝向？", opts: ["互相朝向（圆肩明显）", "朝向前（正常）", "略微内扣"] },
+        { q: "锁骨形状？", opts: ["显著 V 型（斜方肌紧）", "一字平直", "看不清"] },
+        { q: "高低肩：双肩是否视觉高度不一？", opts: ["左高右低", "右高左低", "基本齐平"] },
+        { q: "腰部空隙：背贴墙站，腰后空隙？", opts: ["大于一拳（前倾风险）", "一个手掌（正常）", "完全没缝（后倾风险）"] },
+        { q: "鞋底磨损：哪一侧最严重？", opts: ["外侧", "内侧", "均匀"] },
+        { q: "久坐后：最酸痛的部位？", opts: ["颈后部", "下腰部", "臀腿发麻"] },
+        { q: "并脚下蹲：脚后跟能踩实吗？", opts: ["不能（往后倒）", "轻松踩实", "比较勉强"] },
+        { q: "骨盆：是否有小腹异常凸出现象？", opts: ["是", "否", "轻微"] },
+        { q: "肩胛骨：是否有突出的“小翅膀”？", opts: ["明显凸起", "平整贴合", "略微凸起"] },
+        { q: "习惯：是否经常翘二郎腿？", opts: ["经常", "从不", "偶尔"] },
+        { q: "呼吸：深呼吸时肩膀是否明显耸起？", opts: ["是（浅呼吸）", "否（腹式呼吸）"] },
+        { q: "颈椎：转动脖子是否有嘎吱声？", opts: ["经常响", "从不", "偶尔响"] },
+        { q: "平衡：单脚闭眼站能坚持 10 秒吗？", opts: ["不能", "勉强", "很稳"] },
+        { q: "核心：是否有肋骨外翻（挺胸时肋骨凸出）？", opts: ["是", "否", "不确定"] },
+        { q: "动态：走路时是否经常踢到脚踝？", opts: ["经常", "从不", "偶尔"] },
+        { q: "手腕：双手背后互勾能否指尖相扣？", opts: ["不能", "轻松扣住", "勉强碰到"] },
+        { q: "假胯宽：大腿外侧是否有异常凸起？", opts: ["非常明显", "没有", "有一点"] },
+        { q: "办公：每天面对电脑时长？", opts: ["8h以上", "4-8h", "4h以内"] },
+        { q: "运动：现在的训练频率？", opts: ["零基础", "偶尔练", "经常健身"] }
     ];
 
-    let currentIdx = 0;
-    let answers = [];
+    let current = 0;
+    let dataLog = [];
 
     function startQuiz() {
-        const h = document.getElementById('base-height').value;
-        const w = document.getElementById('base-weight').value;
-        if(!h || !w) return alert("请填写身高体重");
-        answers.push(`性别:${document.getElementById('base-sex').value}, 年龄:${document.getElementById('base-age').value}, 身高:${h}cm, 体重:${w}kg, 目标:${document.getElementById('base-goal').value}`);
-        document.getElementById('step-base').style.display = 'none';
-        document.getElementById('step-quiz').style.display = 'block';
-        document.getElementById('title').innerText = "体态自检测评";
-        render();
+        const h = document.getElementById('h').value, w = document.getElementById('w').value;
+        if(!h || !w) return alert("请输入完整数据");
+        dataLog.push(`档案:性别${document.getElementById('sex').value},身高${h},体重${w},年龄${document.getElementById('age').value},目标:${document.getElementById('goal').value}`);
+        document.getElementById('p1').classList.remove('active');
+        document.getElementById('p2').classList.add('active');
+        renderQ();
     }
 
-    function render() {
-        const q = questions[currentIdx];
-        document.getElementById('q-display').innerText = `${currentIdx + 1}. ${q.q}`;
-        document.getElementById('prog-fill').style.width = ((currentIdx + 1) / 20) * 100 + '%';
-        const box = document.getElementById('opts-box'); box.innerHTML = '';
+    function renderQ() {
+        const q = questions[current];
+        document.getElementById('q-text').innerText = `${current + 1}. ${q.q}`;
+        const box = document.getElementById('q-options'); box.innerHTML = '';
         q.opts.forEach(o => {
-            const btn = document.createElement('div'); btn.className = 'opt-btn'; btn.innerText = o;
-            btn.onclick = () => {
-                answers.push(o);
-                if(currentIdx < 19) { currentIdx++; render(); } 
-                else { 
-                    document.getElementById('nav').style.display='none';
-                    document.getElementById('step-quiz').style.display='none'; 
-                    document.getElementById('step-auth').style.display='block'; 
-                }
+            const b = document.createElement('div'); b.className = 'opt-btn'; b.innerText = o;
+            b.onclick = () => {
+                dataLog.push(o);
+                if(current < 19) { current++; renderQ(); }
+                else { document.getElementById('p2').classList.remove('active'); document.getElementById('p3').classList.add('active'); }
             };
-            box.appendChild(btn);
+            box.appendChild(b);
         });
     }
 
-    async function validate() {
-        const code = document.getElementById('activationCode').value;
-        const pts = code.split('-');
-        if(pts.length !== 2) return alert("授权码格式错误");
+    async function unlock() {
+        const c = document.getElementById('authCode').value;
+        const pts = c.split('-');
+        if(pts.length !== 2) return alert("验证错误");
         const s1 = pts[0].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
         const s2 = pts[1].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
-        if(s1 !== 543 || s2 !== 618) return alert("授权码验证失败");
+        if(s1 !== 543 || s2 !== 618) return alert("授权码未通过");
 
-        document.getElementById('loading').style.display = 'block';
+        document.getElementById('loader').style.display = 'block';
         try {
-            const res = await fetch("https://api.deepseek.com/chat/completions", {
+            const res = await fetch(API_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEP_KEY}` },
+                headers: { "Content-Type": "application/json", "Authorization": API_KEY },
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位精通人体解剖与营养学的私教。根据身高体重体态数据，提供Markdown格式报告。包含：BMI评价、体态诊断、30天针对性训练、饮食建议。"},
-                        {role: "user", content: answers.join('; ')}
+                        {role: "system", content: "你是一位精通人体解剖学的私教。根据BMI和体态数据提供Markdown格式报告，包含诊断、30天针对性纠正方案。"},
+                        {role: "user", content: dataLog.join(';')}
                     ]
                 })
             });
-            const data = await res.json();
-            document.getElementById('report-content').innerHTML = marked.parse(data.choices[0].message.content);
-            document.getElementById('result-view').style.display = 'block';
-        } catch(e) { alert("网络异常，请检查 API 或重试"); document.getElementById('loading').style.display = 'none'; }
+            const d = await res.json();
+            document.getElementById('report-md').innerHTML = marked.parse(d.choices[0].message.content);
+            document.getElementById('report-view').style.display = 'block';
+        } catch(e) { alert("接口响应异常，请检查配置。"); document.getElementById('loader').style.display = 'none'; }
     }
 </script>
 </body>
