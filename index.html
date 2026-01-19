@@ -3,117 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Coach Pro | 20项深度体态评估</title>
+    <title>AI 深度私教评估系统</title>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
-        :root { --accent: #ff2442; }
-        body { margin: 0; padding: 0; min-height: 100vh; font-family: -apple-system, sans-serif; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 15s ease infinite; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .container { width: 90%; max-width: 440px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(25px); border-radius: 30px; padding: 25px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.15); color: #1e1b4b; }
-        .page { display: none; flex-direction: column; animation: fadeIn 0.4s ease forwards; }
-        .page.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
-        #progress-inner { width: 0%; height: 100%; background: var(--accent); transition: 0.3s; }
-        .inst-box { background: rgba(255,255,255,0.4); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 15px; border-left: 4px solid var(--accent); }
-        h2 { font-size: 1.1rem; text-align: center; margin-bottom: 15px; line-height: 1.4; }
-        .opt-btn { background: rgba(255,255,255,0.6); padding: 16px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; text-align: center; font-weight: bold; border: 1px solid transparent; }
-        .opt-btn:active { background: #fff; transform: scale(0.97); }
-        input { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; font-size: 1.1rem; font-family: monospace; }
-        .active-btn { background: var(--accent); color: white; padding: 18px; border: none; border-radius: 16px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        #result-page { display: none; position: fixed; inset: 0; background: #fff; z-index: 9999; padding: 25px; overflow-y: auto; color: #333; }
-        #loader { display: none; text-align: center; font-weight: bold; margin-top: 15px; }
+        :root { --primary: #007aff; --bg: #f0f2f5; --card-bg: #ffffff; --text: #333; }
+        body { 
+            margin: 0; padding: 0; background-color: #d12d6c; /* 背景颜色参考图片中的侧边颜色 */
+            background-image: linear-gradient(180deg, #d12d6c 0%, #a21b4b 100%);
+            font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+            display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 20px;
+        }
+        .main-card { 
+            width: 92%; max-width: 480px; background: #e9ecef; border-radius: 24px; 
+            padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 40px;
+        }
+        .header { text-align: center; margin-bottom: 20px; color: #1e1b4b; font-weight: bold; font-size: 1.2rem; }
+        .header span { margin-right: 8px; }
+
+        /* 卡片内部容器 */
+        .content-box { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; }
+
+        /* 激活码区域 */
+        .auth-section { background: #e7f3ff; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; }
+        .auth-section input { 
+            width: 90%; border: none; background: transparent; font-size: 1.1rem; 
+            text-align: center; outline: none; color: var(--primary); font-weight: bold;
+        }
+        .auth-tip { font-size: 0.75rem; color: #666; margin-top: 8px; }
+
+        /* 题目/表单样式 */
+        .section-title { color: #0056b3; font-size: 0.95rem; font-weight: bold; margin-bottom: 15px; border-left: 4px solid #0056b3; padding-left: 10px; }
+        .label { font-size: 0.85rem; color: #666; margin-bottom: 8px; display: block; }
+        
+        .opt-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .opt-item { 
+            background: #f8f9fa; border: 1px solid #eee; padding: 14px; border-radius: 12px;
+            font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+        }
+        .opt-item:active { background: #e7f3ff; border-color: var(--primary); color: var(--primary); }
+
+        /* 进度条 */
+        .prog-container { height: 4px; background: #ddd; border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+        .prog-bar { height: 100%; background: var(--primary); width: 5%; transition: 0.3s; }
+
+        .submit-btn { 
+            width: 100%; background: #1a1a1a; color: white; border: none; padding: 18px;
+            border-radius: 12px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px;
+        }
+        
+        #result-page { display: none; background: white; min-height: 100vh; width: 100%; position: absolute; top: 0; left: 0; z-index: 100; padding: 25px; box-sizing: border-box; }
+        .loader { display: none; text-align: center; font-size: 0.9rem; color: #666; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="app">
-    <div id="page-quiz" class="page active">
-        <div class="progress-bar"><div id="progress-inner"></div></div>
-        <div class="inst-box" id="hint-text">自检准备中...</div>
-        <h2 id="question-text">正在初始化</h2>
-        <div id="options-box"></div>
+<div class="main-card" id="app">
+    <div class="header">🎯 AI 深度私教评估系统</div>
+
+    <div class="auth-section">
+        <input type="text" id="activationCode" placeholder="请输入激活码">
+        <div class="auth-tip">* 授权码仅限单次评估，请生成后及时截图</div>
     </div>
 
-    <div id="page-auth" class="page">
-        <h2>🔓 激活 AI 定制报告</h2>
-        <div class="inst-box">请输入您的 12-16 位授权激活码以开始分析。</div>
-        <input type="text" id="activationCode" placeholder="格式：XXXXX-XXXXXX">
-        <button class="active-btn" onclick="handleVerify()">验证并生成报告</button>
-        <div id="loader">🚀 AI 正在根据您的 20 项体态指标建模...</div>
+    <div class="prog-container"><div class="prog-bar" id="prog-bar"></div></div>
+
+    <div class="content-box" id="quiz-container">
+        <div class="section-title" id="quiz-index">1. 基础指标</div>
+        <span class="label" id="quiz-question">正在加载评估题目...</span>
+        <div class="opt-grid" id="opts-box"></div>
     </div>
+
+    <div class="content-box" id="status-container" style="display:none;">
+        <div class="section-title">2. 身体状态</div>
+        <span class="label">如有腰酸、膝盖响、现阶段疼痛请务必填写...</span>
+        <textarea id="extra-info" style="width:100%; border:1px solid #eee; border-radius:12px; height:80px; padding:10px; box-sizing:border-box;" placeholder="例如：久坐腰痛，左膝盖弹响..."></textarea>
+    </div>
+
+    <button class="submit-btn" id="final-btn" onclick="handleFinal()" style="display:none;">生成专属深度计划</button>
+    <div id="loading" class="loader">🚀 AI 正在深度建模，请稍后...</div>
 </div>
 
 <div id="result-page">
-    <div id="md-body" style="line-height: 1.6;"></div>
-    <button onclick="location.reload()" style="width:100%; padding:15px; margin-top:20px; border:none; background:#eee; border-radius:12px; font-weight:bold;">重新测评</button>
+    <div id="md-body"></div>
+    <button onclick="location.reload()" style="width:100%; padding:15px; border:none; background:#eee; border-radius:12px; margin-top:30px;">重新测评</button>
 </div>
 
 <script>
+    const KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 填入 Key
+
     const questions = [
-        { h: "自检 1: 头部", q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["头前伸", "基本垂直", "不确定"] },
-        { h: "自检 2: 肩部", q: "自然站立，手掌心的朝向？", opts: ["向后(圆肩)", "向大腿(正常)", "不确定"] },
-        { h: "自检 3: 锁骨", q: "镜中观察，锁骨的形态？", opts: ["明显的V型", "平直一字型", "看不清"] },
-        { h: "自检 4: 肩高", q: "双肩是否有明显高低不一？", opts: ["左高右低", "右高左低", "基本齐平"] },
-        { h: "自检 5: 躯干", q: "靠墙站，后脑勺能否轻松贴墙？", opts: ["贴不到", "轻松贴到", "贴到但吃力"] },
-        { h: "自检 6: 腰椎", q: "腰与墙之间空隙可塞进？", opts: ["整个拳头", "一个手掌", "没缝隙"] },
-        { h: "自检 7: 骨盆", q: "四肢不胖但小腹明显前凸？", opts: ["很明显", "偶尔", "没有"] },
-        { h: "自检 8: 旋转", q: "是否有经常性骨盆旋转感(裤头斜)？", opts: ["有", "无", "不确定"] },
-        { h: "自检 9: 膝盖", q: "双脚并拢，膝盖能碰到吗？", opts: ["碰不到(O型)", "能碰到", "膝盖内扣(X型)"] },
-        { h: "自检 10: 足踝", q: "观察鞋底，哪侧磨损更严重？", opts: ["外侧多", "内侧多", "较均匀"] },
-        { h: "体感 11", q: "久坐一小时后，哪里最不舒服？", opts: ["颈后/斜方肌", "下腰部", "臀部/腿麻"] },
-        { h: "习惯 12", q: "平时是否有习惯性翘二郎腿？", opts: ["经常翘", "偶尔", "基本不翘"] },
-        { h: "动态 13", q: "双手向后背勾，能否指尖相扣？", opts: ["差很远", "勉强碰到", "轻松相扣"] },
-        { h: "动态 14", q: "双脚并拢下蹲(亚洲蹲)，会倒吗？", opts: ["会往后倒", "轻松下蹲", "脚跟离地"] },
-        { h: "呼吸 15", q: "深呼吸时，主要是胸口起伏吗？", opts: ["是的(浅呼吸)", "腹部起伏", "都有"] },
-        { h: "核心 16", q: "单脚站立闭眼，能坚持10秒吗？", opts: ["坚持不住", "勉强可以", "非常轻松"] },
-        { h: "视觉 17", q: "背部肩胛骨是否像“翅膀”般凸起？", opts: ["明显凸起", "平整贴合", "略微凸起"] },
-        { h: "症状 18", q: "转动脖子时是否有“嘎吱”响声？", opts: ["经常响", "偶尔响", "从未响过"] },
-        { h: "生活 19", q: "每天低头玩手机/电脑时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
-        { h: "体质 20", q: "运动后关节是否有过劳疼痛感？", opts: ["经常有", "偶尔", "几乎没有"] }
+        { q: "您的性别？", opts: ["女生", "男生"] },
+        { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["头前伸", "基本垂直", "不确定"] },
+        { q: "自然站立，手掌心的朝向？", opts: ["向后(圆肩)", "向大腿(正常)", "不确定"] },
+        { q: "镜中观察，锁骨的形态？", opts: ["明显的V型", "平直一字型", "看不清"] },
+        { q: "双肩是否有明显高低不一？", opts: ["左高右低", "右高左低", "基本齐平"] },
+        { q: "靠墙站，后脑勺能否轻松贴墙？", opts: ["贴不到", "轻松贴到", "贴到但吃力"] },
+        { q: "腰与墙之间空隙可塞进？", opts: ["整个拳头", "一个手掌", "没缝隙"] },
+        { q: "四肢不胖但小腹明显前凸？", opts: ["很明显", "偶尔", "没有"] },
+        { q: "是否有经常性骨盆旋转感？", opts: ["有", "无", "不确定"] },
+        { q: "并脚下蹲，脚后跟能踩实吗？", opts: ["踩不实(会倒)", "轻松踩实", "比较费劲"] },
+        { q: "观察鞋底，哪侧磨损更严重？", opts: ["外侧多", "内侧多", "较均匀"] },
+        { q: "久坐一小时后，哪里最不舒服？", opts: ["颈后/斜方肌", "下腰部", "臀部/腿麻"] },
+        { q: "平时是否有习惯性翘二郎腿？", opts: ["经常翘", "偶尔", "基本不翘"] },
+        { q: "双手向后背勾，能否指尖相扣？", opts: ["差很远", "勉强碰到", "轻松相扣"] },
+        { q: "深呼吸时，主要是胸口起伏吗？", opts: ["是的(浅呼吸)", "腹部起伏", "都有"] },
+        { q: "背部肩胛骨是否像翅膀般凸起？", opts: ["明显凸起", "平整贴合", "略微凸起"] },
+        { q: "转动脖子时是否有响声？", opts: ["经常响", "偶尔响", "从未响过"] },
+        { q: "每天低头时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
+        { q: "您的主要目标？", opts: ["体态纠正", "减脂塑形", "缓解疼痛"] },
+        { q: "练习环境？", opts: ["居家无器械", "健身房全器材"] }
     ];
 
     let currentIdx = 0;
-    let userData = [];
+    let results = [];
 
-    function initQuiz() {
+    function render() {
         const q = questions[currentIdx];
-        document.getElementById('hint-text').innerText = q.h;
-        document.getElementById('question-text').innerText = q.q;
-        document.getElementById('progress-inner').style.width = ((currentIdx+1)/20)*100 + '%';
-        const box = document.getElementById('options-box');
+        document.getElementById('quiz-index').innerText = `${currentIdx + 1}. 评估环节`;
+        document.getElementById('quiz-question').innerText = q.q;
+        document.getElementById('prog-bar').style.width = ((currentIdx + 1) / 20) * 100 + '%';
+        
+        const box = document.getElementById('opts-box');
         box.innerHTML = '';
         q.opts.forEach(o => {
-            const btn = document.createElement('div');
-            btn.className = 'opt-btn'; btn.innerText = o;
-            btn.onclick = () => {
-                userData.push(`${q.h}:${o}`);
-                if(currentIdx < 19) { currentIdx++; initQuiz(); }
-                else { 
-                    document.getElementById('page-quiz').classList.remove('active');
-                    document.getElementById('page-auth').classList.add('active');
+            const div = document.createElement('div');
+            div.className = 'opt-item';
+            div.innerText = o;
+            div.onclick = () => {
+                results.push(`${q.q}: ${o}`);
+                if(currentIdx < 19) {
+                    currentIdx++; render();
+                } else {
+                    document.getElementById('quiz-container').style.display = 'none';
+                    document.getElementById('status-container').style.display = 'block';
+                    document.getElementById('final-btn').style.display = 'block';
                 }
             };
-            box.appendChild(btn);
+            box.appendChild(div);
         });
     }
 
-    async function handleVerify() {
-        const input = document.getElementById('activationCode').value;
-        const parts = input.split('-');
-        if(parts.length !== 2) return alert("激活码格式错误（需包含一个横杠）");
+    async function handleFinal() {
+        const code = document.getElementById('activationCode').value;
+        const parts = code.split('-');
+        if(parts.length !== 2) return alert("请输入正确格式的激活码 (       )");
 
-        // ASCII 校验逻辑
         const sum1 = parts[0].split('').reduce((a, b) => a + b.charCodeAt(0), 0);
         const sum2 = parts[1].split('').reduce((a, b) => a + b.charCodeAt(0), 0);
 
         if(sum1 !== 543 || sum2 !== 618) {
-            alert("激活码无效，请检查输入或联系客服。");
-            return;
+            return alert("激活码无效，请核对后再试。");
         }
 
-        document.getElementById('loader').style.display = 'block';
-        const KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 填入 sk- 开头的 Key
+        document.getElementById('loading').style.display = 'block';
+        const extra = document.getElementById('extra-info').value;
 
         try {
             const res = await fetch("https://api.deepseek.com/chat/completions", {
@@ -122,21 +165,21 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位顶级人体体态纠正专家。"},
-                        {role: "user", content: `测评数据：${JSON.stringify(userData)}。请给出一份专业、具有鼓励性的30天体态纠正报告。包含：诊断结论、核心问题点、针对性动作建议（分早晚）、生活禁忌。用Markdown输出。`}
+                        {role: "system", content: "你是一位精通人体的私教。用专业Markdown格式提供纠正报告。"},
+                        {role: "user", content: `用户测评：${results.join('; ')}。补充：${extra}。`}
                     ]
                 })
             });
             const data = await res.json();
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('result-page').style.display = 'block';
             document.getElementById('md-body').innerHTML = marked.parse(data.choices[0].message.content);
+            document.getElementById('result-page').style.display = 'block';
         } catch(e) {
-            alert("AI 连接超时，请重试。");
-            document.getElementById('loader').style.display = 'none';
+            alert("生成失败，请检查网络");
+            document.getElementById('loading').style.display = 'none';
         }
     }
-    window.onload = initQuiz;
+
+    window.onload = render;
 </script>
 </body>
 </html>
