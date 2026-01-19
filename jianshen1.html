@@ -2,119 +2,54 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>AI 智能私教 Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coach Pro | 私人深度定制教练</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --p: #1a73e8; --bg: #f8fafc; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
-        .box { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 550px; }
-        h1 { text-align: center; color: var(--p); margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; color: #444; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        textarea { height: 60px; resize: none; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 14px; background: var(--p); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #saveBtn { background: #34a853; display: none; }
-        #output { margin-top: 25px; border-top: 2px solid #eee; padding-top: 15px; line-height: 1.7; font-size: 15px; }
-        .loading { text-align: center; color: #666; font-style: italic; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-    </style>
-</head>
-<body>
-
-<div class="box">
-    <h1>💪 深度定制健身计划</h1>
-    
-    <div class="grid">
-        <div class="form-group"><label>性别</label><select id="gender"><option>女</option><option>男</option></select></div>
-        <div class="form-group"><label>年龄</label><input type="number" id="age" value="25"></div>
-        <div class="form-group"><label>身高 (cm)</label><input type="number" id="h" value="151"></div>
-        <div class="form-group"><label>体重 (kg)</label><input type="number" id="w" value="42"></div>
-    </div>
-
-    <div class="form-group">
-        <label>身体状态 (如：久坐腰疼、经常低血糖)</label>
-        <textarea id="status" placeholder="写写你的身体小秘密..."></textarea>
-    </div>
-    <div class="form-group">
-        <label>运动习惯 (如：基本不运动、以前练过舞)</label>
-        <textarea id="habit" placeholder="描述下你平时的活动量..."></textarea>
-    </div>
-    
-    <div class="form-group">
-        <label>理想身材</label>
-        <select id="dream">
-            <option>马甲线少女 (紧致线条感)</option>
-            <option>超模体型 (修长匀称)</option>
-            <option>元气运动风 (想长点肉，更健康)</option>
-        </select>
-    </div>
-
-    <div class="btn-group">
-        <button onclick="askAI()">生成我的计划</button>
-        <button id="saveBtn" onclick="saveToTxt()">保存到本地</button>
-    </div>
-
-    <div id="output"></div>
-</div>
-
-<script>
-    async function askAI() {
-        const out = document.getElementById('output');
-        const saveBtn = document.getElementById('saveBtn');
-        out.innerHTML = "<p class='loading'>教练正在查阅资料并计算建议，请稍候...</p>";
-        saveBtn.style.display = "none";
-
-        // ⚠️ 请在这里填入你新复制的 API KEY
-        const KEY = "AIzaSyC_9B_ze95qDMD3FIls6lRpScUCvuiGd0g"; 
+        :root { --accent: #6366f1; --glass: rgba(255, 255, 255, 0.7); }
         
-        // 使用固定的 URL 地址
-        const URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + KEY;
-
-        const info = {
-            g: document.getElementById('gender').value,
-            a: document.getElementById('age').value,
-            h: document.getElementById('h').value,
-            w: document.getElementById('w').value,
-            s: document.getElementById('status').value || "无特殊伤病",
-            hb: document.getElementById('habit').value || "无运动习惯",
-            d: document.getElementById('dream').value
-        };
-
-        const prompt = `你是一位专业私教。请根据以下信息定制方案：
-        用户：${info.g}，${info.a}岁，${info.h}cm/${info.w}kg。身体：${info.s}。习惯：${info.hb}。目标：${info.d}。
-        输出 Markdown 格式：1. BMI 分析与体型定位。2. 一周详细计划（带动作组数）。3. 饮食黑红榜。4. 给新手小白的一句话。`;
-
-        try {
-            const resp = await fetch(URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-            const data = await resp.json();
-            
-            if (data.candidates && data.candidates[0].content) {
-                const text = data.candidates[0].content.parts[0].text;
-                out.innerHTML = marked.parse(text);
-                saveBtn.style.display = "block";
-            } else {
-                throw new Error("API 响应异常");
-            }
-        } catch (e) {
-            out.innerHTML = "<p style='color:red'>❌ 生成失败。常见原因：<br>1. API Key 未激活（需等 5 分钟）<br>2. 请确保代理软件开启了“全局模式”</p>";
+        /* 动态渐变背景 */
+        body { 
+            margin: 0; padding: 20px; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
-    }
 
-    function saveToTxt() {
-        const text = document.getElementById('output').innerText;
-        const blob = new Blob([text], {type: "text/plain"});
-        const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(blob);
-        a.download = "我的健身计划.txt";
-        a.click();
-    }
-</script>
-</body>
-</html>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 毛玻璃容器 */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        h1 { text-align: center; color: #1f2937; font-size: 1.5rem; margin-bottom: 25px; letter-spacing: -0.5px; }
+
+        .auth-section {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+        }
+        .auth-section label { display: block; font-size: 0.8rem; font-weight: bold; color: #4f46e5; margin-bottom: 10px; }
+        .auth-section input {
+            width: 100%; background: white; border: 2px solid #e0e7ff; padding: 12px;
+            border-radius: 12px; font-size: 1.2rem; font-weight: bold; text-align: center;
+            letter-spacing: 3px; color: #4f46e5; box-sizing: border-box; outline: none;
+        }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px
