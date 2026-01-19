@@ -3,76 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Coach Pro | 私人深度定制教练</title>
+    <title>AI Coach Pro | 智能私人订制教练</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root { --accent: #6366f1; --glass: rgba(255, 255, 255, 0.7); }
-        
-        /* 动态渐变背景 */
         body { 
             margin: 0; padding: 20px; min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, sans-serif;
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 毛玻璃容器 */
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 30px;
-            padding: 30px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            box-sizing: border-box;
+            border-radius: 30px; padding: 30px; width: 100%; max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); box-sizing: border-box;
         }
 
-        h1 { text-align: center; color: #1f2937; font-size: 1.5rem; margin-bottom: 25px; letter-spacing: -0.5px; }
-
-        .auth-section {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            padding: 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
-        }
-        .auth-section label { display: block; font-size: 0.8rem; font-weight: bold; color: #4f46e5; margin-bottom: 10px; }
-        .auth-section input {
-            width: 100%; background: white; border: 2px solid #e0e7ff; padding: 12px;
-            border-radius: 12px; font-size: 1.2rem; font-weight: bold; text-align: center;
-            letter-spacing: 3px; color: #4f46e5; box-sizing: border-box; outline: none;
-        }
+        h1 { text-align: center; color: #1f2937; font-size: 1.5rem; margin-bottom: 25px; }
+        .auth-section { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); padding: 20px; border-radius: 20px; margin-bottom: 25px; }
+        .auth-section input { width: 100%; background: white; border: 2px solid #e0e7ff; padding: 12px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; text-align: center; letter-spacing: 3px; color: #4f46e5; box-sizing: border-box; outline: none; }
 
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
         .input-group label { font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 5px; margin-left: 5px; }
         
-        input[type="number"], select, textarea {
-            padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px;
-            background: rgba(255,255,255,0.5); font-size: 14px; outline: none;
-        }
-
+        input[type="number"], select, textarea { padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; background: rgba(255,255,255,0.5); font-size: 14px; outline: none; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--accent); background: white; }
         textarea { height: 60px; resize: none; }
 
-        button {
-            width: 100%; padding: 16px; border: none; border-radius: 15px;
-            background: #1f2937; color: white; font-size: 1rem; font-weight: bold;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
-        }
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: #000; }
+        #customTargetWrapper { display: none; margin-top: 10px; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #output { margin-top: 30px; line-height: 1.7; color: #374151; font-size: 15px; }
-        .loading { text-align: center; color: #6366f1; font-weight: bold; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        button { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #1f2937; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { transform: translateY(-2px); background: #000; }
+        #output { margin-top: 30px; line-height: 1.7; color: #374151; }
+        .loading { text-align: center; color: #6366f1; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -81,53 +53,85 @@
     <h1>🎯 AI Coach Pro</h1>
 
     <div class="auth-section">
-        <label>请输入 10 位授权激活码</label>
-        <input type="text" id="authCode" maxlength="10" placeholder="解锁计划">
+        <label style="display:block; font-size:0.7rem; color:#4f46e5; margin-bottom:8px; text-align:center;">请输入 10 位授权码解锁</label>
+        <input type="text" id="authCode" maxlength="10" placeholder="ACTIVATE">
     </div>
 
     <div class="input-grid">
-        <div class="input-group"><label>性别</label><select id="gender"><option>女</option><option>男</option></select></div>
+        <div class="input-group"><label>性别</label><select id="gender" onchange="updateTargets()"><option value="女">女生</option><option value="男">男生</option></select></div>
         <div class="input-group"><label>年龄</label><input type="number" id="age" value="25"></div>
         <div class="input-group"><label>身高(cm)</label><input type="number" id="h" value="160"></div>
         <div class="input-group"><label>体重(kg)</label><input type="number" id="w" value="50"></div>
     </div>
 
-    <div class="input-group" style="margin-bottom:15px;"><label>身体状态</label><textarea id="status" placeholder="如：腰酸、膝盖响、生理期不规律..."></textarea></div>
-    <div class="input-group" style="margin-bottom:15px;"><label>运动习惯</label><textarea id="habit" placeholder="如：小白没练过、喜欢有氧操..."></textarea></div>
+    <div class="input-group"><label>身体状态</label><textarea id="status" placeholder="如：久坐腰疼、膝盖受过伤..."></textarea></div>
     
     <div class="input-group">
-        <label>您的身材目标</label>
-        <select id="dream">
-            <option>马甲线塑形 (S曲线)</option>
-            <option>极简直角肩 (体态改善)</option>
-            <option>蜜桃臀力量 (增肌塑形)</option>
-            <option>全身效减脂 (健康轻盈)</option>
+        <label>身材目标</label>
+        <select id="dream" onchange="toggleCustomInput()">
+            <option>马甲线塑形 (紧致线条)</option>
+            <option>超模直角肩 (改善体态)</option>
+            <option>蜜桃臀打造 (力量塑形)</option>
+            <option>全身效减脂 (轻盈体感)</option>
+            <option value="other">其他（自行填写）</option>
         </select>
+        <div id="customTargetWrapper">
+            <input type="text" id="customTarget" placeholder="请输入您的具体要求，如：a...b...c...">
+        </div>
     </div>
 
     <button onclick="handleExecute()">生成专属深度计划</button>
-
     <div id="output"></div>
 </div>
 
 <script>
+    // 1. 性别与目标的联动逻辑
+    function updateTargets() {
+        const gender = document.getElementById('gender').value;
+        const targetSelect = document.getElementById('dream');
+        const femaleOptions = `
+            <option>马甲线塑形 (紧致线条)</option>
+            <option>超模直角肩 (改善体态)</option>
+            <option>蜜桃臀打造 (力量塑形)</option>
+            <option>全身效减脂 (轻盈体感)</option>
+            <option value="other">其他（自行填写）</option>
+        `;
+        const maleOptions = `
+            <option>打造麒麟臂 (上肢充血感)</option>
+            <option>公狗腰/腹肌 (核心刻画)</option>
+            <option>宽肩倒三角 (增肌厚度)</option>
+            <option>硬汉减脂 (高效燃脂)</option>
+            <option value="other">其他（自行填写）</option>
+        `;
+        targetSelect.innerHTML = (gender === '女') ? femaleOptions : maleOptions;
+        toggleCustomInput(); // 重置自定义输入框状态
+    }
+
+    // 2. 显示/隐藏自定义输入框
+    function toggleCustomInput() {
+        const targetSelect = document.getElementById('dream');
+        const customWrapper = document.getElementById('customTargetWrapper');
+        customWrapper.style.display = (targetSelect.value === 'other') ? 'block' : 'none';
+    }
+
     async function handleExecute() {
         const code = document.getElementById('authCode').value.trim().toUpperCase();
         const out = document.getElementById('output');
 
-        // --- 🔐 商业级校验算法 ---
-        // 规则：1.必须10位 2.含K 3.第4位ASCII减去第8位ASCII必须等于3
-        function checkCode(s) {
-            if(s.length !== 10 || !s.includes("K")) return false;
-            return (s.charCodeAt(3) - s.charCodeAt(7)) === 3;
-        }
+        // 🔐 校验算法：第4位ASCII减去第8位ASCII必须等于3，且含K
+        const checkCode = (s) => (s.length === 10 && s.includes("K") && (s.charCodeAt(3) - s.charCodeAt(7) === 3));
 
         if(!checkCode(code)) {
-            alert("❌ 授权码无效或格式错误！请联系小红书卖家。");
-            return;
+            alert("❌ 授权码无效！"); return;
         }
 
-        out.innerHTML = "<p class='loading'>💎 授权成功！教练正在计算最佳方案...</p>";
+        out.innerHTML = "<p class='loading'>💎 授权成功！正在规划方案...</p>";
+
+        // 获取目标：如果是其他，则取输入框的值
+        let finalTarget = document.getElementById('dream').value;
+        if (finalTarget === 'other') {
+            finalTarget = document.getElementById('customTarget').value || "自定义目标";
+        }
 
         const info = {
             g: document.getElementById('gender').value,
@@ -135,15 +139,14 @@
             h: document.getElementById('h').value,
             w: document.getElementById('w').value,
             s: document.getElementById('status').value || "健康",
-            hb: document.getElementById('habit').value || "无",
-            d: document.getElementById('dream').value
+            d: finalTarget
         };
 
-        // ⚠️ 请在此处填入你的 API KEY
+        // ⚠️ 请填入你的 KEY
         const KEY = "AIzaSyC_9B_ze95qDMD3FIls6lRpScUCvuiGd0g";
         const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
 
-        const prompt = `你是一位私教。帮我制定健身计划。身高${info.h}, 体重${info.w}, 性别${info.g}。状态:${info.s}。习惯:${info.hb}。目标:${info.d}。请用Markdown格式，包含饮食建议和一周课表。`;
+        const prompt = `你是一位专业私教。资料：${info.g}性，${info.a}岁，${info.h}cm/${info.w}kg。身体：${info.s}。目标：${info.d}。请提供一周计划、饮食建议和BMI诊断，用Markdown格式。`;
 
         try {
             const resp = await fetch(URL, {
@@ -154,10 +157,9 @@
             const data = await resp.json();
             out.innerHTML = marked.parse(data.candidates[0].content.parts[0].text);
         } catch (e) {
-            out.innerHTML = "<p style='color:red'>❌ 网络连接超时。请确保你的网络工具已开启全局模式。</p>";
+            out.innerHTML = "<p style='color:red'>❌ 连接失败，请检查网络工具。</p>";
         }
     }
 </script>
 </body>
 </html>
-
