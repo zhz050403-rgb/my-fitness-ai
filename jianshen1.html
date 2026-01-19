@@ -52,4 +52,111 @@
             letter-spacing: 3px; color: #4f46e5; box-sizing: border-box; outline: none;
         }
 
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 0.75rem; font-weight: 600; color: #6b7280; margin-bottom: 5px; margin-left: 5px; }
+        
+        input[type="number"], select, textarea {
+            padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px;
+            background: rgba(255,255,255,0.5); font-size: 14px; outline: none;
+        }
+
+        textarea { height: 60px; resize: none; }
+
+        button {
+            width: 100%; padding: 16px; border: none; border-radius: 15px;
+            background: #1f2937; color: white; font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: #000; }
+
+        #output { margin-top: 30px; line-height: 1.7; color: #374151; font-size: 15px; }
+        .loading { text-align: center; color: #6366f1; font-weight: bold; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <h1>🎯 AI Coach Pro</h1>
+
+    <div class="auth-section">
+        <label>请输入 10 位授权激活码</label>
+        <input type="text" id="authCode" maxlength="10" placeholder="解锁计划">
+    </div>
+
+    <div class="input-grid">
+        <div class="input-group"><label>性别</label><select id="gender"><option>女</option><option>男</option></select></div>
+        <div class="input-group"><label>年龄</label><input type="number" id="age" value="25"></div>
+        <div class="input-group"><label>身高(cm)</label><input type="number" id="h" value="160"></div>
+        <div class="input-group"><label>体重(kg)</label><input type="number" id="w" value="50"></div>
+    </div>
+
+    <div class="input-group" style="margin-bottom:15px;"><label>身体状态</label><textarea id="status" placeholder="如：腰酸、膝盖响、生理期不规律..."></textarea></div>
+    <div class="input-group" style="margin-bottom:15px;"><label>运动习惯</label><textarea id="habit" placeholder="如：小白没练过、喜欢有氧操..."></textarea></div>
+    
+    <div class="input-group">
+        <label>您的身材目标</label>
+        <select id="dream">
+            <option>马甲线塑形 (S曲线)</option>
+            <option>极简直角肩 (体态改善)</option>
+            <option>蜜桃臀力量 (增肌塑形)</option>
+            <option>全身效减脂 (健康轻盈)</option>
+        </select>
+    </div>
+
+    <button onclick="handleExecute()">生成专属深度计划</button>
+
+    <div id="output"></div>
+</div>
+
+<script>
+    async function handleExecute() {
+        const code = document.getElementById('authCode').value.trim().toUpperCase();
+        const out = document.getElementById('output');
+
+        // --- 🔐 商业级校验算法 ---
+        // 规则：1.必须10位 2.含K 3.第4位ASCII减去第8位ASCII必须等于3
+        function checkCode(s) {
+            if(s.length !== 10 || !s.includes("K")) return false;
+            return (s.charCodeAt(3) - s.charCodeAt(7)) === 3;
+        }
+
+        if(!checkCode(code)) {
+            alert("❌ 授权码无效或格式错误！请联系小红书卖家。");
+            return;
+        }
+
+        out.innerHTML = "<p class='loading'>💎 授权成功！教练正在计算最佳方案...</p>";
+
+        const info = {
+            g: document.getElementById('gender').value,
+            a: document.getElementById('age').value,
+            h: document.getElementById('h').value,
+            w: document.getElementById('w').value,
+            s: document.getElementById('status').value || "健康",
+            hb: document.getElementById('habit').value || "无",
+            d: document.getElementById('dream').value
+        };
+
+        // ⚠️ 请在此处填入你的 API KEY
+        const KEY = "你的API_KEY";
+        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
+
+        const prompt = `你是一位私教。帮我制定健身计划。身高${info.h}, 体重${info.w}, 性别${info.g}。状态:${info.s}。习惯:${info.hb}。目标:${info.d}。请用Markdown格式，包含饮食建议和一周课表。`;
+
+        try {
+            const resp = await fetch(URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await resp.json();
+            out.innerHTML = marked.parse(data.candidates[0].content.parts[0].text);
+        } catch (e) {
+            out.innerHTML = "<p style='color:red'>❌ 网络连接超时。请确保你的网络工具已开启全局模式。</p>";
+        }
+    }
+</script>
+</body>
+</html>
