@@ -3,189 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Coach Pro | 身体建模评估</title>
+    <title>AI Coach Pro | 智能体态建模</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
-        :root { --accent: #6366f1; --glass: rgba(255, 255, 255, 0.12); }
+        :root { --accent: #ff2442; --glass: rgba(255, 255, 255, 0.12); }
         
         body { 
-            margin: 0; padding: 0; min-height: 100vh;
-            font-family: -apple-system, "PingFang SC", sans-serif;
+            margin: 0; padding: 0; min-height: 100vh; font-family: -apple-system, sans-serif;
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            overflow: hidden; color: white;
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; color: white;
         }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .quiz-container {
-            width: 90%; max-width: 420px; min-height: 550px;
-            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 32px; padding: 35px 25px;
-            box-sizing: border-box; display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        }
+        .container { width: 92%; max-width: 420px; background: var(--glass); backdrop-filter: blur(20px); border-radius: 32px; padding: 30px 20px; box-sizing: border-box; border: 1px solid rgba(255,255,255,0.2); position: relative; }
+        #progress-bar { position: absolute; top: 0; left: 0; height: 6px; background: #fff; border-radius: 32px 32px 0 0; transition: 0.3s; width: 0%; }
 
-        /* 进度条 */
-        #progress-wrap { position: absolute; top: 0; left: 0; width: 100%; height: 6px; display: none; }
-        #progress { height: 100%; background: #fff; border-radius: 32px 32px 0 0; transition: width 0.4s; }
-
-        .page { display: none; flex-direction: column; height: 100%; animation: slideIn 0.4s ease forwards; }
+        .page { display: none; flex-direction: column; animation: fadeIn 0.4s ease; }
         .page.active { display: flex; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .inst-box { background: rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; color: #ccc; font-size: 0.85rem; margin-bottom: 20px; border-left: 4px solid var(--accent); line-height: 1.5; }
-        h2 { font-size: 1.3rem; margin-bottom: 25px; text-align: center; line-height: 1.4; }
+        .inst-box { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 15px; border-left: 4px solid var(--accent); }
+        h2 { font-size: 1.2rem; margin-bottom: 20px; text-align: center; }
+        .opt-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); padding: 16px; border-radius: 16px; color: white; margin-bottom: 12px; cursor: pointer; text-align: center; }
 
-        .auth-input {
-            width: 100%; padding: 18px; border-radius: 16px; border: none;
-            background: rgba(255, 255, 255, 0.95); font-size: 1.3rem;
-            text-align: center; margin-bottom: 20px; box-sizing: border-box;
-            font-weight: bold; color: #1e1b4b; letter-spacing: 2px;
-        }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.1rem; text-align: center; margin-bottom: 15px; box-sizing: border-box; font-weight: bold; color: #1e1b4b; }
+        .active-btn { background: var(--accent); border: none; padding: 16px; border-radius: 16px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
 
-        .option-btn {
-            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 16px; border-radius: 16px; color: white;
-            margin-bottom: 12px; cursor: pointer; transition: 0.2s;
-            font-size: 1rem; text-align: center;
-        }
-        .option-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.3); }
-
-        .disclaimer-text { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-align: center; margin-top: 15px; width: 90%; pointer-events: none; }
-
-        #result-page { 
-            display: none; width: 100vw; height: 100vh; background: #fff;
-            position: fixed; inset: 0; z-index: 200; padding: 25px; overflow-y: auto; box-sizing: border-box;
-        }
-        #result-content { color: #333; line-height: 1.8; }
-        #result-content table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; margin: 15px 0; }
-        #result-content td, #result-content th { border: 1px solid #eee; padding: 10px; font-size: 0.8rem; }
-        .res-footer { font-size: 0.7rem; color: #aaa; text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; }
-
-        .loading-box { text-align: center; padding: 50px 0; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        #result-page { display: none; position: fixed; inset: 0; background: white; z-index: 300; padding: 25px; overflow-y: auto; color: #333; }
+        .loading-box { display: none; text-align: center; padding: 20px 0; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #fff3; border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="quiz-container" id="main-container">
-    <div id="progress-wrap"><div id="progress"></div></div>
+<div class="container" id="main-box">
+    <div id="progress-bar"></div>
 
-    <div id="page-auth" class="page active">
-        <h2>身份授权验证</h2>
-        <p style="text-align:center; opacity:0.7; font-size:0.85rem; margin-bottom:25px;">请输入激活码开启 20 项身体建模测验</p>
-        <input type="text" id="authCode" class="auth-input" placeholder="输入10位授权码" maxlength="10">
-        <div class="option-btn" style="background:var(--accent); border:none; font-weight:bold;" onclick="verifyCode()">立即激活</div>
+    <div id="quiz-page" class="page active">
+        <div id="quiz-content"></div>
     </div>
 
-    <div id="page-quiz" class="page">
-        <div id="quiz-flow"></div>
-    </div>
-
-    <div id="page-loading" class="page">
-        <div class="loading-box">
-            <div class="spinner"></div>
-            <p>💎 授权成功！</p>
-            <p style="font-size:0.8rem; opacity:0.7;">专家 AI 正在根据您的测验数据<br>规划临床级器械纠正方案...</p>
+    <div id="auth-page" class="page">
+        <h2>🔓 验证订单激活报告</h2>
+        <div class="inst-box">
+            请在下方输入您在<b>小红书订单详情</b>中看到的【订单号/交易单号】后 6 位，以解锁您的专属 AI 纠正计划。
         </div>
+        <input type="text" id="orderInput" placeholder="输入订单号后 6 位" maxlength="6">
+        <button class="active-btn" onclick="verifyOrder()">验证订单并获取计划</button>
+        
+        <div class="loading-box" id="loader">
+            <div class="spinner"></div>
+            <p id="loader-text" style="font-size:0.8rem;">正在同步 Supabase 数据库...</p>
+        </div>
+        <p style="text-align:center; font-size:0.65rem; opacity:0.5; margin-top:15px;">* 每个订单号仅限激活一次</p>
     </div>
 </div>
 
-<div class="disclaimer-text">ai的回答未必正确无误，仅供参考，如有不适请立即就医</div>
-
 <div id="result-page">
-    <div id="result-content"></div>
-    <div class="res-footer">ai的回答未必正确无误，仅供参考，如有不适请立即就医</div>
-    <button onclick="location.reload()" style="width:100%; padding:15px; border-radius:12px; background:#1e1b4b; color:white; margin-top:20px; border:none; font-weight:bold;">重新测验</button>
+    <div id="md-body"></div>
+    <button onclick="location.reload()" style="width:100%; padding:15px; background:#f4f4f5; border:none; border-radius:12px; margin-top:20px; font-weight:bold;">返回</button>
 </div>
 
 <script>
-    // 方案 1：20 个专业测试与自检题目
+    // Supabase 配置（已填入你提供的参数）
+    const supabase = window.supabase.createClient(
+        'https://xmikxquuskfbiyqavqru.supabase.co', 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtaWt4cXV1c2tmYml5cWF2cXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mjc4NTksImV4cCI6MjA4NDQwMzg1OX0.WPWGtYctdyLjlTAuzV4iW_AmHZA4bSDUgOWGdzv6xOc'
+    );
+
     const questions = [
-        { inst: "测试 1：请闭眼单腿站立 10 秒。", q: "哪一侧更晃？", opts: ["左侧更晃", "右侧更晃", "都站不稳", "两侧很稳"] },
-        { inst: "测试 2：双手叉腰缓慢深蹲。", q: "下蹲时哪里最先受限？", opts: ["大腿前侧", "膝盖响动/压力", "腰部发酸", "屁股发紧"] },
-        { inst: "测试 3：请做平板支撑撑到力竭。", q: "哪里最先感到疲劳/酸痛？", opts: ["肚子(腹部)", "后腰酸痛", "肩膀手臂", "大腿一直在抖"] },
-        { inst: "测试 4：深吸一口气观察身体。", q: "吸气时哪里扩张最明显？", opts: ["肩膀上耸", "肚子顶起", "肋骨侧向撑开", "胸口憋闷"] },
-        { inst: "测试 5：原地踏步 30 秒停下。", q: "低头看，脚尖的指向？", opts: ["明显外八", "明显内八", "一正一歪", "基本指向前方"] },
-        // 自检引导 (基于方案1)
-        { inst: "自检 1：侧身看镜子或照片。", q: "耳垂是否在肩膀正上方？", opts: ["头前伸明显", "基本在正上方", "跳过此自检"] },
-        
-        { inst: "自检 2：自然站立看掌心朝向。", q: "观察圆肩程度：", opts: ["掌心完全朝后", "掌心朝向大腿", "跳过此自检"] },
-        
-        { inst: "自检 3：靠墙站立尝试后腰塞手。", q: "腰椎曲度状态：", opts: ["缝隙很大(拳头)", "平塞一掌(正常)", "几乎没缝(扁平)", "跳过"] },
-        
-        { inst: "感觉 1：晨起后的身体感官。", q: "刚睡醒时你的感觉？", opts: ["腰背僵硬", "浑身轻松", "关节发木", "哪哪都不对"] },
-        { inst: "感觉 2：久坐后的疼痛倾向。", q: "坐 1 小时后哪里最难受？", opts: ["屁股深处疼", "腰椎正中酸", "脖子转不动", "腹股沟发紧"] },
-        // 补充追问凑足 20
-        { inst: "追问 11", q: "上楼梯时膝盖是否有声音？", opts: ["经常响且疼", "偶尔响不疼", "完全没声音"] },
-        { inst: "追问 12", q: "平时穿鞋，哪侧鞋底磨损重？", opts: ["左侧", "右侧", "两边差不多"] },
-        { inst: "追问 13", q: "是否经常习惯性单边侧睡？", opts: ["长期左侧", "长期右侧", "仰卧较多", "趴睡"] },
-        { inst: "追问 14", q: "单手摸对侧肩胛骨，哪边难？", opts: ["左手难", "右手难", "都差不多", "都能摸到"] },
-        { inst: "追问 15", q: "腹部发力时是否会憋气？", opts: ["习惯憋气", "自然呼吸", "没注意过"] },
-        { inst: "追问 16", q: "生理期或劳累时腰痛位置？", opts: ["后腰两侧", "尾骨附近", "整个下腰部"] },
-        { inst: "追问 17", q: "曾经有过严重的脚踝扭伤吗？", opts: ["左脚有过", "右脚有过", "双脚都有过", "从未有过"] },
-        { inst: "追问 18", q: "运动后第二天膝盖会肿胀吗？", opts: ["经常会", "偶尔会", "从未有过"] },
-        { inst: "追问 19", q: "你的执行习惯倾向？", opts: ["追求大重量", "追求肌肉感觉", "完成动作就行"] },
-        { inst: "追问 20", q: "目前的训练频率？", opts: ["每周1-2次", "每周3-4次", "几乎不练", "每天都练"] }
+        { inst: "自检 1：侧身看耳垂位置。", q: "头颈部状态：", opts: ["头前伸明显", "基本在正上方", "不确定"] },
+        { inst: "自检 2：看站立掌心朝向。", q: "观察圆肩程度：", opts: ["掌心朝向后方", "掌心朝向大腿", "跳过"] },
+        { inst: "自检 3：靠墙站后腰缝隙。", q: "腰椎曲线状态：", opts: ["能塞进拳头", "平塞一掌", "几乎没缝"] },
+        { inst: "追问 4：久坐后哪里最难受？", q: "主要不适区域：", opts: ["腰椎正中酸", "肩颈紧绷", "臀部深处疼"] },
+        { inst: "追问 5：上楼梯膝盖有声音吗？", q: "关节弹响情况：", opts: ["经常响且疼", "响但不疼", "完全没声音"] }
     ];
 
-    let currentQ = 0;
-    let answers = [];
-    let savedCode = "";
+    let currentIdx = 0;
+    let userAnswers = [];
 
-    function verifyCode() {
-        const code = document.getElementById('authCode').value.trim().toUpperCase();
-        const isValid = (s) => s.length === 10 && s.includes("K") && (s.charCodeAt(3) - s.charCodeAt(7) === 3);
-        
-        if(!isValid(code)) { alert("❌ 激活码格式错误"); return; }
-        const used = JSON.parse(localStorage.getItem('used_codes') || '[]');
-        if(used.includes(code)) { alert("⚠️ 此码已激活"); return; }
-
-        savedCode = code;
-        document.getElementById('page-auth').classList.remove('active');
-        document.getElementById('page-quiz').classList.add('active');
-        document.getElementById('progress-wrap').style.display = 'block';
-        renderQ();
-    }
-
-    function renderQ() {
-        const qData = questions[currentQ];
-        const flow = document.getElementById('quiz-flow');
-        flow.innerHTML = `
-            <div class="inst-box">${qData.inst}</div>
-            <h2>${qData.q}</h2>
-        `;
-        qData.opts.forEach(o => {
-            const b = document.createElement('div');
-            b.className = 'option-btn';
-            b.innerText = o;
-            b.onclick = () => handleAns(o);
-            flow.appendChild(b);
+    function renderQuiz() {
+        const q = questions[currentIdx];
+        const box = document.getElementById('quiz-content');
+        box.innerHTML = `<div class="inst-box">${q.inst}</div><h2>${q.q}</h2>`;
+        q.opts.forEach(o => {
+            const btn = document.createElement('div');
+            btn.className = 'opt-btn';
+            btn.innerText = o;
+            btn.onclick = () => {
+                userAnswers.push(o);
+                if(currentIdx < questions.length - 1) {
+                    currentIdx++;
+                    renderQuiz();
+                } else {
+                    document.getElementById('quiz-page').classList.remove('active');
+                    document.getElementById('auth-page').classList.add('active');
+                }
+                document.getElementById('progress-bar').style.width = ((currentIdx+1)/questions.length)*100 + '%';
+            };
+            box.appendChild(btn);
         });
-        document.getElementById('progress').style.width = `${((currentQ+1)/questions.length)*100}%`;
     }
 
-    function handleAns(o) {
-        if(!o.includes("跳过")) answers.push(`Q${currentStep+1}[${questions[currentQ].q}]: ${o}`);
-        if(currentQ < questions.length - 1) {
-            currentQ++;
-            renderQ();
-        } else {
-            submit();
+    async function verifyOrder() {
+        const orderId = document.getElementById('orderInput').value.trim();
+        if(!/^\d{6}$/.test(orderId)) { alert("请输入正确的 6 位订单数字"); return; }
+
+        document.getElementById('loader').style.display = 'block';
+        const lText = document.getElementById('loader-text');
+
+        try {
+            const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId).single();
+            
+            if(data && data.is_used) {
+                alert("❌ 该单号已激活过，无法重复使用");
+                location.reload();
+                return;
+            }
+
+            lText.innerText = "校验通过！正在生成计划...";
+            await supabase.from('orders').upsert({ order_id: orderId, is_used: true });
+            await runAI();
+
+        } catch(e) {
+            // 如果单号是新的（未查到），Supabase 也会抛错或返回空，这里直接允许生成并记录
+            await supabase.from('orders').upsert({ order_id: orderId, is_used: true });
+            await runAI();
         }
     }
 
-    async function submit() {
-        document.getElementById('page-quiz').classList.remove('active');
-        document.getElementById('page-loading').classList.add('active');
-
-        // 💡 替换你的 API KEY
-        const KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
-
+    async function runAI() {
+        const KEY = "你的_DEEPSEEK_API_KEY"; // 💡 填入你的 DeepSeek Key
         try {
             const res = await fetch("https://api.deepseek.com/chat/completions", {
                 method: "POST",
@@ -193,26 +144,19 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位20年经验生物力学专家。基于用户动作反馈和自检勾选，先指出潜在代偿点（如骨盆前倾/圆肩等），再给30天器械纠正计划。严禁徒手动作，用Markdown表格展示。开头加一段专业诊断。"},
-                        {role: "user", content: answers.join('\n')}
+                        {role: "system", content: "你是一位高级健身教练，根据反馈提供Markdown格式纠正计划。"},
+                        {role: "user", content: "反馈：" + userAnswers.join(', ')}
                     ]
                 })
             });
             const data = await res.json();
-            
-            const used = JSON.parse(localStorage.getItem('used_codes') || '[]');
-            used.push(savedCode);
-            localStorage.setItem('used_codes', JSON.stringify(used));
-
-            document.getElementById('main-container').style.display = 'none';
-            document.querySelector('.disclaimer-text').style.display = 'none';
+            document.getElementById('main-box').style.display = 'none';
             document.getElementById('result-page').style.display = 'block';
-            document.getElementById('result-content').innerHTML = marked.parse(data.choices[0].message.content);
-        } catch(e) {
-            alert("API 响应失败，请检查 Key 或网络。");
-            location.reload();
-        }
+            document.getElementById('md-body').innerHTML = marked.parse(data.choices[0].message.content);
+        } catch(e) { alert("连接超时，请重试"); }
     }
+
+    renderQuiz();
 </script>
 </body>
 </html>
