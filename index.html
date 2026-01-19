@@ -3,159 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Coach Pro | 深度私教评估系统</title>
+    <title>AI Coach Pro | 临床级身体建模评估</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root { --accent: #6366f1; --glass: rgba(255, 255, 255, 0.9); }
+        :root { --accent: #4f46e5; --glass: rgba(255, 255, 255, 0.98); --text: #1f2937; }
         body { 
             margin: 0; padding: 10px; min-height: 100vh;
             display: flex; justify-content: center; align-items: flex-start;
-            font-family: -apple-system, "Helvetica Neue", sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            overflow-x: hidden; /* 防止全身左右晃动 */
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #0f172a; /* 深邃商业底色 */
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            overflow-x: hidden;
         }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 24px; padding: 20px; width: 100%; max-width: 500px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); box-sizing: border-box;
-            margin-bottom: 20px;
+            border-radius: 20px; padding: 25px; width: 100%; max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); box-sizing: border-box;
+            margin: 10px 0;
+        }
+        h1 { text-align: center; color: var(--accent); font-size: 1.4rem; margin: 0 0 10px; font-weight: 800; }
+        .intro-text { font-size: 0.8rem; color: #6b7280; line-height: 1.5; text-align: center; margin-bottom: 25px; }
+
+        .auth-box { 
+            background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .auth-box input { 
+            width: 100%; border: 2px solid #cbd5e1; padding: 12px; border-radius: 8px; 
+            font-size: 1rem; text-align: center; font-weight: bold; color: var(--accent); outline: none;
         }
 
-        h1 { text-align: center; color: #1f2937; font-size: 1.4rem; margin: 10px 0 20px; }
-        h3 { font-size: 0.95rem; color: #4f46e5; margin: 20px 0 10px; border-left: 4px solid #6366f1; padding-left: 10px; }
-
-        .auth-section { background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15); padding: 15px; border-radius: 16px; margin-bottom: 20px; }
-        .auth-section input { width: 100%; background: white; border: 1.5px solid #e0e7ff; padding: 12px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; text-align: center; color: #4f46e5; box-sizing: border-box; outline: none; }
-
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-        .input-group label { font-size: 0.75rem; font-weight: 600; color: #555; margin-bottom: 6px; }
+        .section-header { 
+            background: #eef2ff; color: var(--accent); padding: 6px 12px; 
+            border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin: 25px 0 15px;
+            border-left: 4px solid var(--accent);
+        }
         
-        input, select, textarea { padding: 10px; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; background: white; font-size: 14px; outline: none; -webkit-appearance: none; }
-        textarea { height: 80px; resize: none; }
+        .q-box { margin-bottom: 18px; }
+        .q-box label { display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 8px; line-height: 1.4; }
+        
+        select { 
+            width: 100%; padding: 10px; border: 1px solid #cbd5e1; 
+            border-radius: 8px; font-size: 14px; background: #fff; appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center; background-size: 1em;
+        }
 
-        /* 防止 AI 生成的内容溢出边界的关键 CSS */
+        button { 
+            width: 100%; padding: 18px; border: none; border-radius: 12px; 
+            background: var(--accent); color: white; font-size: 1rem; font-weight: 800; 
+            cursor: pointer; margin-top: 20px;
+        }
+        
         #output { 
-            margin-top: 20px; line-height: 1.6; color: #374151; 
-            font-size: 14px; word-wrap: break-word; word-break: break-all;
-            overflow-x: hidden; 
+            margin-top: 25px; line-height: 1.7; font-size: 14px; color: #334155;
+            word-wrap: break-word; overflow-wrap: break-word;
         }
-        #output table { 
-            width: 100% !important; border-collapse: collapse; margin: 10px 0; 
-            display: block; overflow-x: auto; /* 表格太宽时允许内部滑动而非撑破容器 */
-            white-space: nowrap; 
-        }
-        #output th, #output td { border: 1px solid #eee; padding: 8px; text-align: left; font-size: 12px; }
-        #output img { max-width: 100%; height: auto; }
-        #output p { margin-bottom: 1em; }
-
-        button { width: 100%; padding: 16px; border: none; border-radius: 14px; background: #1f2937; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .loading { text-align: center; color: #6366f1; padding: 20px; font-weight: bold; }
-
-        #customTargetWrapper { display: none; margin-top: 8px; }
+        #output table { width: 100% !important; border-collapse: collapse; display: block; overflow-x: auto; margin: 15px 0; }
+        #output th, #output td { border: 1px solid #e2e8f0; padding: 10px; min-width: 80px; }
+        .loading { text-align: center; color: var(--accent); font-weight: bold; padding: 30px; }
     </style>
 </head>
 <body>
 
 <div class="glass-card">
-    <h1>🎯 AI 深度私教评估系统</h1>
+    <h1>AI 身体建模评估</h1>
+    <p class="intro-text">
+        跳过意志力，用器械限制错误用力。<br>回答真实感觉，我将在后台为你建立身体力线模型。
+    </p>
 
-    <div class="auth-section">
-        <input type="text" id="authCode" maxlength="10" placeholder="请输入 10 位激活码">
-        <p style="font-size: 10px; color: #888; text-align: center; margin-top: 8px;">* 授权码仅限单次评估，请生成后及时截图</p>
+    <div class="auth-box">
+        <input type="text" id="authCode" maxlength="10" placeholder="输入 10 位授权码">
     </div>
 
-    <h3>1. 基础指标</h3>
-    <div class="input-grid">
-        <div class="input-group"><label>性别</label><select id="gender"><option value="女">女生</option><option value="男">男生</option></select></div>
-        <div class="input-group"><label>年龄</label><input type="number" id="age" value="25"></div>
-        <div class="input-group"><label>身高 (cm)</label><input type="number" id="h" value="165"></div>
-        <div class="input-group"><label>体重 (kg)</label><input type="number" id="w" value="55"></div>
-    </div>
+    <div class="section-header">第一组：静态体态反馈</div>
+    <div class="q-box"><label>1. 站立 3 分钟，重心倾向于？</label><select id="q1"><option>左脚</option><option>右脚</option><option>两边均匀</option></select></div>
+    <div class="q-box"><label>2. 站久了最先累的部位？</label><select id="q2"><option>腰/后腰</option><option>一侧屁股</option><option>大腿前侧</option><option>小腿</option><option>上背/脖子</option></select></div>
+    <div class="q-box"><label>3. 站立时习惯性姿态？</label><select id="q3"><option>锁死膝盖</option><option>塌腰/翘屁股</option><option>挺肚子/骨盆前移</option><option>含胸/圆肩</option></select></div>
 
-    <h3>2. 核心目标</h3>
-    <div class="input-group">
-        <select id="dream">
-            <option value="马甲线塑形">马甲线塑形</option>
-            <option value="直角肩体态">直角肩体态</option>
-            <option value="全身燃脂">全身燃脂</option>
-            <option value="other">其他（自行填写）</option>
-        </select>
-        <div id="customTargetWrapper">
-            <input type="text" id="customTarget" placeholder="请输入具体要求...">
-        </div>
-    </div>
+    <div class="section-header">第二组：下肢力线与走路</div>
+    <div class="q-box"><label>4. 走路时，鞋底磨损更重的一侧？</label><select id="q4"><option>外侧更磨</option><option>内侧更磨</option><option>基本持平</option></select></div>
+    <div class="q-box"><label>5. 上楼梯时，哪条腿更愿意发力先迈？</label><select id="q5"><option>左腿</option><option>右腿</option><option>左右无差别</option></select></div>
+    <div class="q-box"><label>6. 单腿站立 10 秒，哪侧晃动更明显？</label><select id="q6"><option>左侧</option><option>右侧</option><option>都挺稳</option></select></div>
 
-    <h3>3. 身体状态</h3>
-    <div class="input-group"><textarea id="status" placeholder="如有腰酸、膝盖响、生理期不调等请务必填写..."></textarea></div>
+    <div class="section-header">第三组：募集感评估</div>
+    <div class="q-box"><label>7. 臀桥训练时，哪里最酸？</label><select id="q7"><option>屁股</option><option>腰部</option><option>大腿后侧/前侧</option></select></div>
+    <div class="q-box"><label>8. 腿举(倒蹬)时，更容易感觉到？</label><select id="q8"><option>大腿前侧</option><option>屁股</option><option>膝盖压力明显</option></select></div>
+    <div class="q-box"><label>9. 坐姿外展时，屁股外侧有感觉吗？</label><select id="q9"><option>只有大腿酸/屁股没感</option><option>能清楚感觉到屁股外侧</option><option>感觉腰很紧</option></select></div>
 
-    <button id="submitBtn">生成专属深度计划</button>
+    <div class="section-header">第四组：脖颈与下颌状态</div>
+    <div class="q-box"><label>10. 坐着放松时，下巴的位置？</label><select id="q10"><option>习惯性前伸</option><option>能自然收回</option><option>没注意过</option></select></div>
+    <div class="q-box"><label>11. 张大嘴时，耳朵附近是否响或疼？</label><select id="q11"><option>有咔哒声</option><option>疼或有卡住感</option><option>只是紧，不响</option><option>完全正常</option></select></div>
+    <div class="q-box"><label>12. 睡觉的习惯姿势？</label><select id="q12"><option>左侧</option><option>右侧</option><option>平躺</option><option>趴着</option></select></div>
+
+    <div class="section-header">第五组：呼吸与腹压</div>
+    <div class="q-box"><label>13. 深吸气时，哪里起伏大？</label><select id="q13"><option>胸部耸起</option><option>肚子往前挺</option><option>肋骨向两边撑开</option></select></div>
+    <div class="q-box"><label>14. 用力屏息时，身体的第一反应？</label><select id="q14"><option>憋气憋到脸红</option><option>肩膀不自觉耸起</option><option>腹部坚实顶出</option></select></div>
+    <div class="q-box"><label>15. 咳嗽时，腹底的感觉？</label><select id="q15"><option>下意识收紧</option><option>感觉往下坠</option><option>没感觉</option></select></div>
+
+    <div class="section-header">第六组：疼痛与体能上限</div>
+    <div class="q-box"><label>16. 练后第二天，肌肉的感觉？</label><select id="q16"><option>酸胀但舒服</option><option>极其僵硬</option><option>关节或筋隐隐疼</option></select></div>
+    <div class="q-box"><label>17. 生理期或疲劳时，哪疼得厉害？</label><select id="q17"><option>小腹坠疼</option><option>后腰酸疼</option><option>全身乏力没疼点</option></select></div>
+    <div class="q-box"><label>18. 睡醒时，身体的第一体感？</label><select id="q18"><option>轻盈/松</option><option>很沉/紧</option><option>某处固定酸疼</option></select></div>
+
+    <div class="section-header">第七组：训练行为偏好</div>
+    <div class="q-box"><label>19. 在健身房的耐受度？</label><select id="q19"><option>能按部就班练完</option><option>中途累了极其想走</option></select></div>
+    <div class="q-box"><label>20. 方案执行态度？</label><select id="q20"><option>100%按顺序，不乱动</option><option>容易手痒加练或改动作</option></select></div>
+
+    <button id="submitBtn">开始临床级建模分析</button>
     
     <div id="output"></div>
 </div>
 
 <script>
-    // 联动逻辑
-    const genderSelect = document.getElementById('gender');
-    const targetSelect = document.getElementById('dream');
-    genderSelect.addEventListener('change', () => {
-        const isMale = genderSelect.value === '男';
-        targetSelect.innerHTML = isMale ? 
-            `<option value="打造麒麟臂">打造麒麟臂</option><option value="腹肌刻画">腹肌刻画</option><option value="other">其他（自行填写）</option>` : 
-            `<option value="马甲线塑形">马甲线塑形</option><option value="直角肩体态">直角肩体态</option><option value="other">其他（自行填写）</option>`;
-    });
-    targetSelect.addEventListener('change', () => {
-        document.getElementById('customTargetWrapper').style.display = targetSelect.value === 'other' ? 'block' : 'none';
-    });
-
-    // 核心提交逻辑
     document.getElementById('submitBtn').addEventListener('click', async () => {
         const code = document.getElementById('authCode').value.trim().toUpperCase();
         const out = document.getElementById('output');
 
-        // 简易验证
-        if(code.length < 5) { alert("请输入正确的授权码"); return; }
+        // 校验逻辑
+        const isValid = (s) => s.length === 10 && s.includes("K") && (s.charCodeAt(3) - s.charCodeAt(7) === 3);
+        if(!isValid(code)) { alert("授权码验证失败"); return; }
 
-        // 一码一用逻辑（本地记录）
         const used = JSON.parse(localStorage.getItem('used_codes') || '[]');
-        if(used.includes(code)) { alert("该授权码已使用，请勿重复激活"); return; }
+        if(used.includes(code)) { alert("该码已在当前设备激活"); return; }
 
         out.innerHTML = "<div class='loading'>💎 授权成功！您的专属私人教练正在为您规划计划...</div>";
 
-        // ⚠️ 填入你的 DeepSeek API Key
-        const DEEPSEEK_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
+        let answers = "";
+        for(let i=1; i<=20; i++) { answers += `问题${i}: ${document.getElementById('q'+i).value}\n`; }
+
+        // ⚠️ 此处填入 DeepSeek KEY
+        const KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
 
         try {
-            const response = await fetch("https://api.deepseek.com/chat/completions", {
+            const resp = await fetch("https://api.deepseek.com/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${DEEPSEEK_KEY}` },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${KEY}` },
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位专业私教。请为用户生成一份极其详细的计划。如果包含表格，请确保表格精简。"},
-                        {role: "user", content: `性别:${genderSelect.value}, 状态:${document.getElementById('status').value}, 目标:${targetSelect.value}`}
+                        {role: "system", content: "你是一位20年经验的生物力学专家。根据用户20道体态/募集感反馈，先给出临床级建模诊断（指出代偿点和力线问题），再给出一份30天器械主导计划（不超过8个动作，严禁徒手动作）。Markdown排版，使用表格展示计划。"},
+                        {role: "user", content: answers}
                     ]
                 })
             });
-            const data = await response.json();
-            
-            // 标记已使用
+            const data = await resp.json();
             used.push(code);
             localStorage.setItem('used_codes', JSON.stringify(used));
-            
-            // 渲染结果
             out.innerHTML = marked.parse(data.choices[0].message.content);
-            
-            // 自动滚动到结果区域
             out.scrollIntoView({ behavior: 'smooth' });
         } catch (e) {
-            out.innerHTML = "<p style='color:red'>❌ 生成失败，请检查网络或 Key 余额。</p>";
+            out.innerHTML = "<p style='color:red'>连接异常，请检查 Key 或网络。</p>";
         }
     });
 </script>
