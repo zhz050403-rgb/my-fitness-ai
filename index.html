@@ -3,191 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 智能体态分析系统</title>
-    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
+    <title>AI 专业体态与身材管理系统</title>
+    <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
         :root { --primary: #007aff; --text: #1d1d1f; --bg-red: #d12d6c; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; background: var(--bg-red); font-family: -apple-system, system-ui, sans-serif; display: flex; justify-content: center; align-items: flex-end; min-height: 100vh; overflow: hidden; }
+        
+        .main-card { width: 100%; height: 98vh; max-width: 600px; background: #ffffff; border-radius: 28px 28px 0 0; padding: 40px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        
+        .header { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+        .prog-bg { width: 100%; height: 2px; background: #f2f2f7; margin-bottom: 30px; }
+        .prog-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; width: 5%; }
 
-        body { 
-            margin: 0; padding: 0; background: var(--bg-red); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; justify-content: center; align-items: flex-end; 
-            min-height: 100vh; overflow: hidden;
-        }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #86868b; margin-bottom: 8px; font-weight: 600; }
+        .input-group input, .input-group select { width: 100%; border: 1px solid #e5e5e7; padding: 15px; border-radius: 12px; font-size: 1rem; outline: none; background: #f9f9fb; }
 
-        /* 纯白主卡片：占 98% 高度 */
-        .main-card { 
-            width: 100%; height: 98vh; max-width: 600px;
-            background: #ffffff; border-radius: 28px 28px 0 0;
-            padding: 45px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; position: relative; overflow-y: auto;
-        }
+        .question-text { font-size: 1.3rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 30px; }
+        .opt-btn { background: #fff; border: 1px solid #e5e5e7; padding: 18px; border-radius: 16px; font-size: 1rem; font-weight: 500; cursor: pointer; margin-bottom: 12px; text-align: left; transition: 0.2s; }
+        .opt-btn:active { background: #f5f5f7; border-color: var(--primary); }
 
-        .header { font-size: 1.6rem; font-weight: 700; color: var(--text); margin-bottom: 25px; letter-spacing: -0.5px; }
+        .auth-page { text-align: center; padding-top: 30px; }
+        .auth-input { width: 100%; border: none; background: #f2f2f7; padding: 20px; border-radius: 16px; font-size: 1.4rem; font-weight: 700; text-align: center; letter-spacing: 3px; margin: 30px 0; }
 
-        /* 极简进度条 */
-        .prog-bg { width: 100%; height: 2px; background: #eee; border-radius: 1px; margin-bottom: 35px; }
-        .prog-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; }
-
-        .section-tag { font-size: 0.7rem; font-weight: 700; color: #86868b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .question-text { font-size: 1.4rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 35px; }
-
-        /* 选项设计 */
-        .opt-group { display: flex; flex-direction: column; gap: 14px; }
-        .opt-btn {
-            background: #fff; border: 1px solid #e5e5e7; padding: 22px; border-radius: 18px;
-            font-size: 1.05rem; font-weight: 500; color: var(--text); cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .opt-btn:active { background: #f5f5f7; border-color: var(--primary); transform: scale(0.98); }
-
-        /* 独立激活页专属 UI */
-        .auth-content { text-align: center; padding-top: 40px; }
-        .auth-icon { font-size: 50px; margin-bottom: 25px; display: block; }
-        .auth-input-container { margin: 40px 0; position: relative; }
-        .auth-input-container input {
-            width: 100%; border: none; background: #f5f5f7; padding: 22px; border-radius: 18px;
-            font-size: 1.4rem; font-weight: 700; text-align: center; color: var(--text);
-            outline: none; letter-spacing: 3px; border: 1px solid transparent;
-        }
-        .auth-input-container input:focus { border-color: var(--primary); background: #fff; }
-
-        .bottom-bar { margin-top: auto; padding-bottom: 40px; }
-        .black-btn {
-            width: 100%; background: #000; color: #fff; border: none; padding: 22px;
-            border-radius: 18px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
-        }
-
-        #result-view { 
-            display: none; position: fixed; inset: 0; background: white; z-index: 2000; 
-            padding: 45px 24px; overflow-y: auto;
-        }
-        .loader { display: none; text-align: center; color: #86868b; margin-top: 25px; font-size: 0.95rem; }
-
-        textarea {
-            width: 100%; border: 1px solid #e5e5e7; border-radius: 18px; height: 220px; 
-            padding: 20px; font-size: 1.1rem; outline: none; font-family: inherit; background: #f9f9fb;
-        }
+        .black-btn { width: 100%; background: #000; color: #fff; border: none; padding: 20px; border-radius: 16px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: auto; }
+        #result-view { display: none; position: fixed; inset: 0; background: white; z-index: 2000; padding: 30px 24px; overflow-y: auto; }
+        .loader { display: none; text-align: center; color: #86868b; margin: 20px 0; }
     </style>
 </head>
 <body>
 
 <div class="main-card" id="app">
-    <div id="nav-wrapper">
-        <div class="header">体态评估方案</div>
-        <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width: 5%;"></div></div>
+    <div id="nav">
+        <div class="header" id="title">基础数据采集</div>
+        <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
     </div>
 
-    <div id="step-quiz">
-        <div class="section-tag" id="step-counter">分析进度 1 / 20</div>
-        <div class="question-text" id="q-display">正在加载...</div>
-        <div class="opt-group" id="opts-box"></div>
+    <div id="step-base">
+        <div class="input-group"><label>性别</label><select id="base-sex"><option>女</option><option>男</option></select></div>
+        <div class="input-group"><label>年龄</label><input type="number" id="base-age" placeholder="请输入年龄"></div>
+        <div class="input-group"><label>身高 (cm)</label><input type="number" id="base-height" placeholder="如 165"></div>
+        <div class="input-group"><label>体重 (kg)</label><input type="number" id="base-weight" placeholder="如 55"></div>
+        <div class="input-group"><label>目标身材</label><select id="base-goal"><option>减脂瘦身</option><option>体态纠正（气质提升）</option><option>增肌塑形</option><option>产后修复</option></select></div>
+        <button class="black-btn" onclick="startQuiz()">进入体态深度测评</button>
     </div>
 
-    <div id="step-status" style="display:none;">
-        <div class="section-tag">身体感知</div>
-        <div class="question-text">您目前有哪些明显的身体不适或纠正诉求？</div>
-        <textarea id="extra-notes" placeholder="例如：长期伏案颈椎僵硬、由于习惯性侧睡导致的高低肩明显、或者深蹲时膝盖有异响..."></textarea>
-        <div class="bottom-bar">
-            <button class="black-btn" onclick="toAuth()">下一步</button>
-        </div>
+    <div id="step-quiz" style="display:none;">
+        <div id="q-display" class="question-text">加载中...</div>
+        <div id="opts-box" style="display:flex; flex-direction:column;"></div>
     </div>
 
     <div id="step-auth" style="display:none;">
-        <div class="auth-content">
-            <span class="auth-icon">🛡️</span>
-            <div class="question-text">报告已准备就绪</div>
-            <p style="color:#86868b; margin-top:-20px; font-size:1rem;">请输入授权码以解锁您的 AI 纠正计划</p>
-            
-            <div class="auth-input-container">
-                <input type="text" id="activationCode" placeholder="请输入授权码" spellcheck="false">
-            </div>
-        </div>
-
-        <div class="bottom-bar">
-            <button class="black-btn" onclick="validate()">解锁报告</button>
-            <div id="loading-ui" class="loader">正在调取云端分析数据...</div>
+        <div class="auth-page">
+            <span style="font-size:3rem;">🔒</span>
+            <div class="question-text" style="margin-top:20px;">评估已完成</div>
+            <p style="color:#86868b;">请输入 15 位授权码以解锁深度分析报告</p>
+            <input type="text" id="activationCode" class="auth-input" placeholder="请输入授权码">
+            <button class="black-btn" onclick="validate()">解锁 AI 深度报告</button>
+            <div id="loading" class="loader">正在分析身体模型并生成纠正方案...</div>
         </div>
     </div>
 </div>
 
 <div id="result-view">
-    <div id="report-content"></div>
-    <button onclick="location.reload()" style="width:100%; padding:20px; border:1px solid #eee; background:#fff; border-radius:18px; font-weight:600; margin-top:40px;">重新评估</button>
+    <div id="report-content" style="line-height:1.8;"></div>
+    <button onclick="location.reload()" style="width:100%; padding:15px; border:1px solid #eee; background:#fff; border-radius:12px; margin-top:30px;">重新评估</button>
 </div>
 
 <script>
-    const DEEP_KEY = "你的_DEEPSEEK_API_KEY"; // 🚨 填入 sk- 密钥
+    const DEEP_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
 
     const questions = [
-        { q: "您的主要性别？", opts: ["女生", "男生"] },
-        { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["是（头前伸）", "否（基本垂直）", "不确定"] },
-        { q: "自然站立时，手掌心的朝向？", opts: ["向后（圆肩）", "向大腿（正常）", "略偏后"] },
-        { q: "观察您的锁骨形状？", opts: ["明显的 V 型", "平直一字型", "看不清/不明显"] },
-        { q: "双肩是否有明显的高低不一？", opts: ["左高右低", "右高左低", "基本平衡"] },
-        { q: "靠墙站立，后脑勺能否自然贴墙？", opts: ["贴不到", "轻松贴到", "贴到但吃力"] },
-        { q: "腰与墙面之间的间隙？", opts: ["一个拳头宽", "一个手掌宽", "几乎无缝隙"] },
-        { q: "是否有“四肢不胖但小腹凸出”？", opts: ["非常明显", "轻微", "完全没有"] },
-        { q: "观察鞋底，磨损位置在？", opts: ["外侧磨损多", "内侧磨损多", "磨损均匀"] },
-        { q: "久坐后，身体哪部分最先疲劳？", opts: ["颈部/斜方肌", "下腰部", "臀腿部"] },
-        { q: "是否有翘二郎腿的习惯？", opts: ["经常翘", "偶尔翘", "不翘"] },
-        { q: "双手向后勾，指尖能否相扣？", opts: ["差很远", "勉强碰到", "轻松相扣"] },
-        { q: "深呼吸时，观察身体起伏？", opts: ["胸口动", "肚子动", "都有"] },
-        { q: "单脚站立闭眼，能坚持10秒吗？", opts: ["很难", "勉强", "很稳"] },
-        { q: "肩胛骨是否像翅膀般凸起？", opts: ["明显凸起", "平整贴合", "略微凸起"] },
-        { q: "转动脖子是否有响声？", opts: ["经常响", "从不", "偶尔"] },
-        { q: "每天处理电子产品时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
-        { q: "您的训练基础？", opts: ["零基础小白", "有健身习惯", "专业运动员"] },
-        { q: "近期是否有受过伤？", opts: ["是（有旧疾）", "否（一切正常）"] },
-        { q: "您希望通过报告得到？", opts: ["纠正方案", "风险评估", "饮食建议"] }
+        { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["是（头前伸）", "否（正常）", "轻微前伸"] },
+        { q: "自然站立，手掌心的默认朝向？", opts: ["向后（圆肩）", "向大腿侧（正常）", "略微向后"] },
+        { q: "观察锁骨形状？", opts: ["明显的 V 型", "平直一字型", "看不清/不明显"] },
+        { q: "是否有明显的高低肩？", opts: ["左肩高", "右肩高", "基本齐平"] },
+        { q: "后脑勺是否能轻松贴墙？", opts: ["贴不到", "轻松贴到", "贴到但脖子紧"] },
+        { q: "腰部与墙面的空隙？", opts: ["一个拳头（骨盆前倾风险）", "一个手掌（正常）", "完全贴墙（骨盆后倾风险）"] },
+        { q: "小腹是否异常前凸（即便不胖）？", opts: ["非常明显", "轻微", "没有"] },
+        { q: "裤头是否经常一边高一边低？", opts: ["经常是", "否", "没注意过"] },
+        { q: "并脚下蹲，脚后跟能踩实吗？", opts: ["不能（往后倒）", "轻松踩实", "勉强踩实"] },
+        { q: "鞋底磨损位置？", opts: ["外侧多（足外翻）", "内侧多（平足风险）", "均匀"] },
+        { q: "久坐后哪里最酸痛？", opts: ["颈部", "腰椎", "臀腿"] },
+        { q: "是否有翘二郎腿习惯？", opts: ["经常", "偶尔", "不翘"] },
+        { q: "双手后勾能指尖相扣吗？", opts: ["不能", "勉强", "轻松"] },
+        { q: "观察背部肩胛骨？", opts: ["明显凸起（翼状肩）", "平整", "轻微凸起"] },
+        { q: "呼吸时胸口起伏明显吗？", opts: ["非常明显（浅呼吸）", "腹部起伏多", "两者平衡"] },
+        { q: "走路是否经常踢到脚踝或绊倒？", opts: ["经常", "偶尔", "从未"] },
+        { q: "转动脖子是否有响声？", opts: ["响声大", "没响声", "偶尔响"] },
+        { q: "单脚站立闭眼坚持时间？", opts: ["小于5秒", "5-10秒", "10秒以上"] },
+        { q: "每天处理电子产品时长？", opts: ["10h+", "5-10h", "5h-"] },
+        { q: "现在的疼痛情况？", opts: ["有明显痛点", "偶尔酸胀", "无不适"] }
     ];
 
     let currentIdx = 0;
     let answers = [];
 
+    function startQuiz() {
+        const h = document.getElementById('base-height').value;
+        const w = document.getElementById('base-weight').value;
+        if(!h || !w) return alert("请填写身高体重");
+        answers.push(`性别:${document.getElementById('base-sex').value}, 年龄:${document.getElementById('base-age').value}, 身高:${h}cm, 体重:${w}kg, 目标:${document.getElementById('base-goal').value}`);
+        document.getElementById('step-base').style.display = 'none';
+        document.getElementById('step-quiz').style.display = 'block';
+        document.getElementById('title').innerText = "体态自检测评";
+        render();
+    }
+
     function render() {
         const q = questions[currentIdx];
-        document.getElementById('step-counter').innerText = `分析进度 ${currentIdx + 1} / 20`;
-        document.getElementById('q-display').innerText = q.q;
+        document.getElementById('q-display').innerText = `${currentIdx + 1}. ${q.q}`;
         document.getElementById('prog-fill').style.width = ((currentIdx + 1) / 20) * 100 + '%';
-        const box = document.getElementById('opts-box');
-        box.innerHTML = '';
+        const box = document.getElementById('opts-box'); box.innerHTML = '';
         q.opts.forEach(o => {
-            const btn = document.createElement('div');
-            btn.className = 'opt-btn'; btn.innerText = o;
+            const btn = document.createElement('div'); btn.className = 'opt-btn'; btn.innerText = o;
             btn.onclick = () => {
                 answers.push(o);
-                if(currentIdx < 19) { currentIdx++; render(); }
-                else {
-                    document.getElementById('step-quiz').style.display = 'none';
-                    document.getElementById('step-status').style.display = 'block';
+                if(currentIdx < 19) { currentIdx++; render(); } 
+                else { 
+                    document.getElementById('nav').style.display='none';
+                    document.getElementById('step-quiz').style.display='none'; 
+                    document.getElementById('step-auth').style.display='block'; 
                 }
             };
             box.appendChild(btn);
         });
     }
 
-    function toAuth() {
-        document.getElementById('nav-wrapper').style.display = 'none';
-        document.getElementById('step-status').style.display = 'none';
-        document.getElementById('step-auth').style.display = 'block';
-    }
-
     async function validate() {
         const code = document.getElementById('activationCode').value;
         const pts = code.split('-');
-        if(pts.length !== 2) return alert("授权码错误");
-
-        // 隐藏的逻辑校验
+        if(pts.length !== 2) return alert("授权码格式错误");
         const s1 = pts[0].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
         const s2 = pts[1].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
+        if(s1 !== 543 || s2 !== 618) return alert("授权码验证失败");
 
-        if(s1 !== 543 || s2 !== 618) return alert("授权码验证未通过");
-
-        document.getElementById('loading-ui').style.display = 'block';
-        const extra = document.getElementById('extra-notes').value;
-
+        document.getElementById('loading').style.display = 'block';
         try {
             const res = await fetch("https://api.deepseek.com/chat/completions", {
                 method: "POST",
@@ -195,20 +147,16 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位专业物理治疗师。请根据数据提供Markdown格式的评估方案。"},
-                        {role: "user", content: `数据：${answers.join(',')}。详情：${extra}`}
+                        {role: "system", content: "你是一位精通人体解剖与营养学的私教。根据身高体重体态数据，提供Markdown格式报告。包含：BMI评价、体态诊断、30天针对性训练、饮食建议。"},
+                        {role: "user", content: answers.join('; ')}
                     ]
                 })
             });
             const data = await res.json();
             document.getElementById('report-content').innerHTML = marked.parse(data.choices[0].message.content);
             document.getElementById('result-view').style.display = 'block';
-        } catch(e) {
-            alert("解锁失败，请重试");
-            document.getElementById('loading-ui').style.display = 'none';
-        }
+        } catch(e) { alert("网络异常，请检查 API 或重试"); document.getElementById('loading').style.display = 'none'; }
     }
-    window.onload = render;
 </script>
 </body>
 </html>
