@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Coach Pro | 智能体态建模</title>
+    <title>AI Coach Pro | 建模评估</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
         :root { --accent: #ff2442; --glass: rgba(255, 255, 255, 0.12); }
-        
         body { 
             margin: 0; padding: 0; min-height: 100vh; font-family: -apple-system, sans-serif;
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
@@ -26,7 +25,8 @@
 
         .inst-box { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 15px; border-left: 4px solid var(--accent); }
         h2 { font-size: 1.2rem; margin-bottom: 20px; text-align: center; }
-        .opt-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); padding: 16px; border-radius: 16px; color: white; margin-bottom: 12px; cursor: pointer; text-align: center; }
+        .opt-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); padding: 16px; border-radius: 16px; color: white; margin-bottom: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .opt-btn:active { background: rgba(255,255,255,0.3); transform: scale(0.98); }
 
         input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.1rem; text-align: center; margin-bottom: 15px; box-sizing: border-box; font-weight: bold; color: #1e1b4b; }
         .active-btn { background: var(--accent); border: none; padding: 16px; border-radius: 16px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
@@ -47,28 +47,28 @@
     </div>
 
     <div id="auth-page" class="page">
-        <h2>🔓 验证订单激活报告</h2>
+        <h2>🔓 验证订单 开启分析</h2>
         <div class="inst-box">
-            请在下方输入您在<b>小红书订单详情</b>中看到的【订单号/交易单号】后 6 位，以解锁您的专属 AI 纠正计划。
+            测评已完成！为了保护您的数据隐私并生成专属报告，请输入小红书订单号后 6 位进行激活。
         </div>
-        <input type="text" id="orderInput" placeholder="输入订单号后 6 位" maxlength="6">
-        <button class="active-btn" onclick="verifyOrder()">验证订单并获取计划</button>
+        <input type="text" id="orderInput" placeholder="请输入订单号末 6 位" maxlength="6">
+        <button class="active-btn" onclick="verifyAndGo()">激活 AI 纠正计划</button>
         
         <div class="loading-box" id="loader">
             <div class="spinner"></div>
             <p id="loader-text" style="font-size:0.8rem;">正在同步 Supabase 数据库...</p>
         </div>
-        <p style="text-align:center; font-size:0.65rem; opacity:0.5; margin-top:15px;">* 每个订单号仅限激活一次</p>
+        <p style="text-align:center; font-size:0.65rem; opacity:0.5; margin-top:15px;">* 一次性授权，每个单号仅限激活一次</p>
     </div>
 </div>
 
 <div id="result-page">
     <div id="md-body"></div>
-    <button onclick="location.reload()" style="width:100%; padding:15px; background:#f4f4f5; border:none; border-radius:12px; margin-top:20px; font-weight:bold;">返回</button>
+    <button onclick="location.reload()" style="width:100%; padding:15px; background:#f4f4f5; border:none; border-radius:12px; margin-top:20px; font-weight:bold;">关闭报告</button>
 </div>
 
 <script>
-    // Supabase 配置（已填入你提供的参数）
+    // Supabase 参数
     const supabase = window.supabase.createClient(
         'https://xmikxquuskfbiyqavqru.supabase.co', 
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtaWt4cXV1c2tmYml5cWF2cXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mjc4NTksImV4cCI6MjA4NDQwMzg1OX0.WPWGtYctdyLjlTAuzV4iW_AmHZA4bSDUgOWGdzv6xOc'
@@ -76,10 +76,9 @@
 
     const questions = [
         { inst: "自检 1：侧身看耳垂位置。", q: "头颈部状态：", opts: ["头前伸明显", "基本在正上方", "不确定"] },
-        { inst: "自检 2：看站立掌心朝向。", q: "观察圆肩程度：", opts: ["掌心朝向后方", "掌心朝向大腿", "跳过"] },
-        { inst: "自检 3：靠墙站后腰缝隙。", q: "腰椎曲线状态：", opts: ["能塞进拳头", "平塞一掌", "几乎没缝"] },
-        { inst: "追问 4：久坐后哪里最难受？", q: "主要不适区域：", opts: ["腰椎正中酸", "肩颈紧绷", "臀部深处疼"] },
-        { inst: "追问 5：上楼梯膝盖有声音吗？", q: "关节弹响情况：", opts: ["经常响且疼", "响但不疼", "完全没声音"] }
+        { inst: "自检 2：看站立掌心朝向。", q: "圆肩代偿程度：", opts: ["掌心朝向后方", "掌心朝向侧面", "跳过"] },
+        { inst: "自检 3：靠墙站后腰缝隙。", q: "骨盆前倾自测：", opts: ["能塞进拳头", "平塞一掌", "几乎没缝"] },
+        // ... 继续添加题目直到 20 题
     ];
 
     let currentIdx = 0;
@@ -99,6 +98,7 @@
                     currentIdx++;
                     renderQuiz();
                 } else {
+                    // 题目完成，进入验证页
                     document.getElementById('quiz-page').classList.remove('active');
                     document.getElementById('auth-page').classList.add('active');
                 }
@@ -108,35 +108,40 @@
         });
     }
 
-    async function verifyOrder() {
+    async function verifyAndGo() {
         const orderId = document.getElementById('orderInput').value.trim();
-        if(!/^\d{6}$/.test(orderId)) { alert("请输入正确的 6 位订单数字"); return; }
+        if(!/^\d{6}$/.test(orderId)) { alert("请输入 6 位单号数字"); return; }
 
-        document.getElementById('loader').style.display = 'block';
+        const lBox = document.getElementById('loader');
         const lText = document.getElementById('loader-text');
+        lBox.style.display = 'block';
 
         try {
+            // 查询数据库
             const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId).single();
             
             if(data && data.is_used) {
-                alert("❌ 该单号已激活过，无法重复使用");
+                alert("❌ 该单号已激活过，无法重复激活。");
                 location.reload();
                 return;
             }
 
-            lText.innerText = "校验通过！正在生成计划...";
+            // 标记已使用
+            lText.innerText = "校验成功，正在生成计划...";
             await supabase.from('orders').upsert({ order_id: orderId, is_used: true });
-            await runAI();
+            
+            // 启动 AI
+            await generatePlan();
 
         } catch(e) {
-            // 如果单号是新的（未查到），Supabase 也会抛错或返回空，这里直接允许生成并记录
+            // 如果单号不存在，默认允许（即“静默发货”），同时在数据库记录
             await supabase.from('orders').upsert({ order_id: orderId, is_used: true });
-            await runAI();
+            await generatePlan();
         }
     }
 
-    async function runAI() {
-        const KEY = "你的_DEEPSEEK_API_KEY"; // 💡 填入你的 DeepSeek Key
+    async function generatePlan() {
+        const KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; 
         try {
             const res = await fetch("https://api.deepseek.com/chat/completions", {
                 method: "POST",
@@ -144,8 +149,8 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位高级健身教练，根据反馈提供Markdown格式纠正计划。"},
-                        {role: "user", content: "反馈：" + userAnswers.join(', ')}
+                        {role: "system", content: "你是一位高级健身教练。请根据反馈提供专业的Markdown格式纠正计划。"},
+                        {role: "user", content: "身体测评反馈：" + userAnswers.join(', ')}
                     ]
                 })
             });
@@ -153,7 +158,9 @@
             document.getElementById('main-box').style.display = 'none';
             document.getElementById('result-page').style.display = 'block';
             document.getElementById('md-body').innerHTML = marked.parse(data.choices[0].message.content);
-        } catch(e) { alert("连接超时，请重试"); }
+        } catch(e) {
+            alert("生成失败，请刷新页面或检查 API 设置");
+        }
     }
 
     renderQuiz();
