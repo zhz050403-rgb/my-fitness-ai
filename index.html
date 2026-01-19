@@ -7,194 +7,170 @@
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <style>
         :root { --primary: #007aff; --text: #1d1d1f; --bg-red: #d12d6c; }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
-            margin: 0; padding: 0; 
-            background: var(--bg-red); /* 仅作为顶部的极窄露边 */
+            margin: 0; padding: 0; background: var(--bg-red); 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; justify-content: center; align-items: flex-end; /* 卡片从底部向上顶 */
-            min-height: 100vh;
-            overflow: hidden;
+            display: flex; justify-content: center; align-items: flex-end; 
+            min-height: 100vh; overflow: hidden;
         }
 
-        /* 纯白主卡片：占据 98% 的面积，彻底覆盖背景 */
+        /* 纯白主卡片：占 98% 面积 */
         .main-card { 
-            width: 100%; 
-            height: 98vh; /* 占据屏幕 98% 的高度 */
-            max-width: 600px;
-            background: #ffffff; 
-            border-radius: 24px 24px 0 0; /* 仅顶部圆角 */
-            padding: 40px 24px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-            display: flex; 
-            flex-direction: column;
-            position: relative;
-            overflow-y: auto;
+            width: 100%; height: 98vh; max-width: 600px;
+            background: #ffffff; border-radius: 24px 24px 0 0;
+            padding: 40px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; position: relative; overflow-y: auto;
         }
 
-        .header { 
-            font-size: 1.5rem; font-weight: 700; color: var(--text);
-            margin-bottom: 25px; text-align: left;
-            letter-spacing: -0.5px;
-        }
+        .header { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 25px; letter-spacing: -0.5px; }
 
-        /* 激活码输入：极简设计 */
-        .auth-container {
-            background: #f2f2f7; border-radius: 14px;
-            padding: 14px; margin-bottom: 35px;
-        }
-        .auth-container input {
-            width: 100%; border: none; background: transparent;
-            font-size: 1rem; font-weight: 600; text-align: center;
-            color: var(--primary); outline: none; letter-spacing: 2px;
-        }
-        .auth-tip { font-size: 0.7rem; color: #86868b; text-align: center; margin-top: 6px; }
-
-        .section-tag { 
-            font-size: 0.75rem; font-weight: 700; color: #86868b;
-            margin-bottom: 10px; opacity: 0.8;
-        }
-
-        .question-text { 
-            font-size: 1.3rem; font-weight: 600; color: var(--text);
-            line-height: 1.4; margin-bottom: 30px;
-        }
-
-        /* 选项列表 */
-        .opt-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
-        .opt-btn {
-            background: #ffffff; border: 1px solid #d2d2d7;
-            padding: 20px; border-radius: 14px; font-size: 1rem;
-            font-weight: 500; color: var(--text); cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-            text-align: left;
-        }
-        .opt-btn:active { 
-            background: #f5f5f7; border-color: var(--primary); 
-            transform: scale(0.98); 
-        }
-
-        /* 进度条：更纤细 */
+        /* 进度条 */
         .prog-bg { width: 100%; height: 3px; background: #eee; border-radius: 2px; margin-bottom: 30px; }
         .prog-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.4s ease; }
 
-        .submit-area { margin-top: auto; padding-bottom: 20px; }
-        .black-btn {
-            width: 100%; background: #000000; color: white;
-            border: none; padding: 20px; border-radius: 14px;
-            font-size: 1.05rem; font-weight: 600; cursor: pointer;
-            transition: opacity 0.2s;
+        .section-tag { font-size: 0.75rem; font-weight: 700; color: #86868b; margin-bottom: 10px; text-transform: uppercase; }
+        .question-text { font-size: 1.3rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 30px; }
+
+        /* 选项按钮 */
+        .opt-group { display: flex; flex-direction: column; gap: 12px; }
+        .opt-btn {
+            background: #ffffff; border: 1px solid #d2d2d7; padding: 20px; border-radius: 14px;
+            font-size: 1rem; font-weight: 500; color: var(--text); cursor: pointer;
+            transition: all 0.2s ease; text-align: left;
         }
-        .black-btn:active { opacity: 0.8; }
+        .opt-btn:active { background: #f5f5f7; border-color: var(--primary); transform: scale(0.98); }
+
+        /* 激活码部分（隐藏状态） */
+        .auth-card { 
+            background: #f2f2f7; border-radius: 18px; padding: 25px; text-align: center; margin-top: 10px;
+        }
+        .auth-card input {
+            width: 100%; border: none; background: #fff; padding: 15px; border-radius: 12px;
+            font-size: 1.2rem; font-weight: 700; text-align: center; color: var(--primary);
+            outline: none; letter-spacing: 2px; margin: 15px 0; border: 1px solid #e5e5e7;
+        }
+
+        .bottom-area { margin-top: auto; padding-bottom: 20px; }
+        .black-btn {
+            width: 100%; background: #000; color: #fff; border: none; padding: 20px;
+            border-radius: 14px; font-size: 1.05rem; font-weight: 600; cursor: pointer;
+        }
 
         #result-view { 
-            display: none; position: fixed; inset: 0; 
-            background: white; z-index: 2000; padding: 40px 24px; 
-            overflow-y: auto;
+            display: none; position: fixed; inset: 0; background: white; z-index: 2000; 
+            padding: 40px 24px; overflow-y: auto;
         }
-        .loading-hint { display: none; text-align: center; font-size: 0.9rem; color: #86868b; margin-top: 20px; }
+        .loading { display: none; text-align: center; color: #86868b; margin-top: 15px; font-weight: 500; }
     </style>
 </head>
 <body>
 
 <div class="main-card" id="app">
-    <div class="header">体态深度评估</div>
+    <div class="header" id="main-title">体态深度评估</div>
+    <div class="prog-bg" id="prog-wrapper"><div class="prog-fill" id="prog-fill" style="width: 5%;"></div></div>
 
-    <div class="auth-container">
-        <input type="text" id="activationCode" placeholder="输入 15 位激活码">
-        <div class="auth-tip">验证 543-618 协议后开启生成</div>
-    </div>
-
-    <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width: 5%;"></div></div>
-
-    <div id="quiz-step-view">
+    <div id="quiz-step">
         <div class="section-tag" id="step-counter">QUESTION 1 / 20</div>
-        <div class="question-text" id="q-display">正在准备评估...</div>
+        <div class="question-text" id="q-display">正在准备评估题目...</div>
         <div class="opt-group" id="opts-box"></div>
     </div>
 
-    <div id="status-step-view" style="display:none;">
-        <div class="section-tag">FINAL STEP</div>
+    <div id="status-step" style="display:none;">
+        <div class="section-tag">STEP 21 / 22</div>
         <div class="question-text">补充您的身体感受</div>
-        <textarea id="extra-notes" style="width:100%; border:1px solid #d2d2d7; border-radius:14px; height:150px; padding:15px; font-size:1rem; outline: none;" placeholder="例：脖子经常僵硬、右侧肩膀高..."></textarea>
+        <textarea id="extra-notes" style="width:100%; border:1px solid #d2d2d7; border-radius:14px; height:150px; padding:15px; font-size:1rem; outline: none;" placeholder="例：经常性偏头痛、高低肩、腰肌劳损等..."></textarea>
+        <div class="bottom-area"><button class="black-btn" onclick="goToAuth()">下一步：解锁报告</button></div>
     </div>
 
-    <div class="submit-area">
-        <button class="black-btn" id="gen-btn" onclick="processVerify()" style="display:none;">生成评估报告</button>
-        <div id="loader" class="loading-hint">🚀 AI 正在构建纠正方案...</div>
+    <div id="auth-step" style="display:none;">
+        <div class="section-tag">FINAL STEP</div>
+        <div class="question-text">评估已完成，输入激活码解锁您的深度纠正方案</div>
+        <div class="auth-card">
+            <span style="font-size: 0.85rem; color: #666;">请输入 543-618 协议授权码</span>
+            <input type="text" id="activationCode" placeholder="XXXXX-XXXXXX">
+            <div style="font-size: 0.75rem; color: #86868b;">* 激活码由您的私教或平台提供</div>
+        </div>
+        <div class="bottom-area">
+            <button class="black-btn" onclick="finalVerify()">立即解锁 AI 报告</button>
+            <div id="loader" class="loading">🚀 正在生成 30 天纠正计划...</div>
+        </div>
     </div>
 </div>
 
 <div id="result-view">
     <div id="report-content" style="line-height: 1.8;"></div>
-    <button onclick="location.reload()" style="width:100%; padding:18px; border:1px solid #d2d2d7; background:white; border-radius:14px; font-weight:600; margin-top:40px; color:#1d1d1f;">完成并退出</button>
+    <button onclick="location.reload()" style="width:100%; padding:18px; border:1px solid #d2d2d7; background:white; border-radius:14px; font-weight:600; margin-top:40px;">完成并退出</button>
 </div>
 
 <script>
-    const DEEPSEEK_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 填入 sk- 开头的 Key
+    const DEEPSEEK_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 填入 Key
 
     const questions = [
-        { q: "您的性别？", opts: ["女生", "男生"] },
+        { q: "您的主要性别？", opts: ["女生", "男生"] },
         { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["头前伸（手机颈）", "基本垂直", "不确定"] },
         { q: "自然站立，手掌心的朝向？", opts: ["向后（圆肩）", "向大腿（正常）", "略偏后"] },
-        { q: "观察您的锁骨形状？", opts: ["明显的 V 型", "平直的一字型", "看不清/不明显"] },
-        { q: "双肩是否有明显的高低不一？", opts: ["左肩高", "右肩高", "基本平衡"] },
+        { q: "观察您的锁骨形状？", opts: ["明显的 V 型锁骨", "平直的一字型", "看不清/不明显"] },
+        { q: "双肩是否有明显的高低不一？", opts: ["左肩偏高", "右肩偏高", "基本平衡"] },
         { q: "靠墙站立，后脑勺能否贴墙？", opts: ["贴不到", "轻松贴到", "贴到但吃力"] },
-        { q: "腰与墙面之间的间隙？", opts: ["一个拳头宽", "一个手掌宽", "几乎没缝隙"] },
+        { q: "腰与墙面之间的间隙？", opts: ["一个拳头宽（前倾风险）", "一个手掌宽（正常）", "几乎没缝隙"] },
         { q: "是否有“四肢不胖但小腹凸出”？", opts: ["非常明显", "轻微", "完全没有"] },
-        { q: "裤头是否经常一边高一边低？", opts: ["是", "否", "没注意过"] },
+        { q: "裤头是否经常一边高一边低？", opts: ["是", "否", "不确定"] },
         { q: "并脚下蹲，脚后跟能踩死地面吗？", opts: ["不能（往后倒）", "轻松踩死", "比较勉强"] },
         { q: "常穿的鞋底，磨损位置在？", opts: ["外侧磨损多", "内侧磨损多", "磨损均匀"] },
-        { q: "久坐后，身体哪部分最先疲劳？", opts: ["颈部/斜方肌", "下腰部", "臀腿部"] },
-        { q: "是否有翘二郎腿的习惯？", opts: ["经常翘", "偶尔翘", "从不翘"] },
+        { q: "久坐一小时后，最先酸痛的位置？", opts: ["颈后/斜方肌", "下腰部", "臀腿部"] },
+        { q: "生活中是否有翘二郎腿的习惯？", opts: ["经常翘", "偶尔翘", "从不翘"] },
         { q: "双手向后勾，指尖能否相扣？", opts: ["差很远", "勉强碰到", "轻松相扣"] },
-        { q: "深呼吸时，观察身体起伏？", opts: ["胸口动", "肚子动", "都有"] },
-        { q: "单脚站立闭眼，能坚持10秒吗？", opts: ["很难", "勉强", "很稳"] },
+        { q: "深呼吸时，观察主要起伏点？", opts: ["胸口（浅呼吸）", "腹部（深呼吸）", "都有"] },
+        { q: "单脚站立闭眼，能坚持10秒吗？", opts: ["很难坚持", "勉强可以", "非常平稳"] },
         { q: "肩胛骨是否像翅膀般凸起？", opts: ["是", "否", "轻微"] },
-        { q: "转动脖子是否有响声？", opts: ["经常响", "从不", "偶尔"] },
-        { q: "每天看手机的时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
-        { q: "练习环境？", opts: ["居家（零器械）", "健身房"] }
+        { q: "转动脖子是否有嘎吱响声？", opts: ["经常响", "从不", "偶尔"] },
+        { q: "每天看手机/电脑的时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
+        { q: "练习环境偏好？", opts: ["居家（零器械）", "健身房专业器械"] }
     ];
 
     let currentIdx = 0;
     let answers = [];
 
-    function updateView() {
+    function renderQuiz() {
         const q = questions[currentIdx];
         document.getElementById('step-counter').innerText = `QUESTION ${currentIdx + 1} / 20`;
         document.getElementById('q-display').innerText = q.q;
         document.getElementById('prog-fill').style.width = ((currentIdx + 1) / 20) * 100 + '%';
-        
         const box = document.getElementById('opts-box');
         box.innerHTML = '';
         q.opts.forEach(o => {
             const btn = document.createElement('div');
             btn.className = 'opt-btn'; btn.innerText = o;
             btn.onclick = () => {
-                answers.push(o);
-                if(currentIdx < 19) {
-                    currentIdx++; updateView();
-                } else {
-                    document.getElementById('quiz-step-view').style.display = 'none';
-                    document.getElementById('status-step-view').style.display = 'block';
-                    document.getElementById('gen-btn').style.display = 'block';
+                answers.push(`${q.q}: ${o}`);
+                if(currentIdx < 19) { currentIdx++; renderQuiz(); }
+                else {
+                    document.getElementById('quiz-step').style.display = 'none';
+                    document.getElementById('status-step').style.display = 'block';
+                    document.getElementById('prog-wrapper').style.opacity = '0.3';
                 }
             };
             box.appendChild(btn);
         });
     }
 
-    async function processVerify() {
+    function goToAuth() {
+        document.getElementById('status-step').style.display = 'none';
+        document.getElementById('auth-step').style.display = 'block';
+        document.getElementById('main-title').innerText = "报告已准备就绪";
+    }
+
+    async function finalVerify() {
         const code = document.getElementById('activationCode').value;
         const pts = code.split('-');
-        if(pts.length !== 2) return alert("激活码格式错误 (例: XXXXX-XXXXXX)");
+        if(pts.length !== 2) return alert("激活码格式错误");
 
         const s1 = pts[0].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
         const s2 = pts[1].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
 
-        if(s1 !== 543 || s2 !== 618) return alert("激活码校验不通过！");
+        if(s1 !== 543 || s2 !== 618) return alert("激活码不正确，请联系客服获取");
 
         document.getElementById('loader').style.display = 'block';
         const extra = document.getElementById('extra-notes').value;
@@ -206,8 +182,8 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位专业私教。用Markdown提供30天纠正报告。"},
-                        {role: "user", content: `数据：${answers.join('; ')}。补充：${extra}`}
+                        {role: "system", content: "你是一位专业私教。用Markdown提供详尽的体态诊断和纠正计划。"},
+                        {role: "user", content: `数据：${answers.join('; ')}。现状：${extra}`}
                     ]
                 })
             });
@@ -215,11 +191,11 @@
             document.getElementById('report-content').innerHTML = marked.parse(data.choices[0].message.content);
             document.getElementById('result-view').style.display = 'block';
         } catch(e) {
-            alert("生成失败，请重试");
+            alert("请求失败，请稍后重试");
             document.getElementById('loader').style.display = 'none';
         }
     }
-    window.onload = updateView;
+    window.onload = renderQuiz;
 </script>
 </body>
 </html>
