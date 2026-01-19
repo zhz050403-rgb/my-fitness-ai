@@ -12,84 +12,89 @@
 
         body { 
             margin: 0; padding: 0; 
-            background: var(--bg-red); 
+            background: var(--bg-red); /* 仅作为顶部的极窄露边 */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; justify-content: center; align-items: flex-start;
+            display: flex; justify-content: center; align-items: flex-end; /* 卡片从底部向上顶 */
             min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* 纯白主卡片：占据绝大部分面积 */
+        /* 纯白主卡片：占据 98% 的面积，彻底覆盖背景 */
         .main-card { 
-            width: 100%; min-height: 96vh; /* 几乎充满屏幕高度 */
-            max-width: 500px;
+            width: 100%; 
+            height: 98vh; /* 占据屏幕 98% 的高度 */
+            max-width: 600px;
             background: #ffffff; 
-            margin-top: 20px;
-            border-radius: 32px 32px 0 0; /* 顶部圆角 */
-            padding: 30px 24px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column;
+            border-radius: 24px 24px 0 0; /* 仅顶部圆角 */
+            padding: 40px 24px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+            display: flex; 
+            flex-direction: column;
             position: relative;
+            overflow-y: auto;
         }
 
         .header { 
-            font-size: 1.4rem; font-weight: 700; color: var(--text);
+            font-size: 1.5rem; font-weight: 700; color: var(--text);
             margin-bottom: 25px; text-align: left;
+            letter-spacing: -0.5px;
         }
 
-        /* 激活码输入框：极简淡蓝风格 */
-        .auth-box {
-            background: #f5f7fa; border-radius: 16px;
-            padding: 16px; margin-bottom: 30px;
+        /* 激活码输入：极简设计 */
+        .auth-container {
+            background: #f2f2f7; border-radius: 14px;
+            padding: 14px; margin-bottom: 35px;
         }
-        .auth-box input {
+        .auth-container input {
             width: 100%; border: none; background: transparent;
-            font-size: 1.1rem; font-weight: 600; text-align: center;
-            color: var(--primary); outline: none; letter-spacing: 1px;
+            font-size: 1rem; font-weight: 600; text-align: center;
+            color: var(--primary); outline: none; letter-spacing: 2px;
         }
-        .auth-tip { font-size: 0.75rem; color: #86868b; text-align: center; margin-top: 8px; }
+        .auth-tip { font-size: 0.7rem; color: #86868b; text-align: center; margin-top: 6px; }
 
-        .section-label { 
-            font-size: 0.85rem; font-weight: 600; color: var(--primary);
-            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;
-        }
-
-        .question-title { 
-            font-size: 1.25rem; font-weight: 600; color: var(--text);
-            line-height: 1.4; margin-bottom: 25px;
+        .section-tag { 
+            font-size: 0.75rem; font-weight: 700; color: #86868b;
+            margin-bottom: 10px; opacity: 0.8;
         }
 
-        /* 选项样式 */
-        .opt-list { display: flex; flex-direction: column; gap: 12px; }
-        .opt-item {
-            background: #ffffff; border: 1.5px solid #e5e5e7;
-            padding: 18px; border-radius: 16px; font-size: 1rem;
+        .question-text { 
+            font-size: 1.3rem; font-weight: 600; color: var(--text);
+            line-height: 1.4; margin-bottom: 30px;
+        }
+
+        /* 选项列表 */
+        .opt-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+        .opt-btn {
+            background: #ffffff; border: 1px solid #d2d2d7;
+            padding: 20px; border-radius: 14px; font-size: 1rem;
             font-weight: 500; color: var(--text); cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            text-align: left;
         }
-        .opt-item:active { 
-            background: #f5f7fa; border-color: var(--primary); 
+        .opt-btn:active { 
+            background: #f5f5f7; border-color: var(--primary); 
             transform: scale(0.98); 
         }
 
-        /* 进度条 */
-        .prog-wrap { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-bottom: 30px; }
-        .prog-bar { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* 进度条：更纤细 */
+        .prog-bg { width: 100%; height: 3px; background: #eee; border-radius: 2px; margin-bottom: 30px; }
+        .prog-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.4s ease; }
 
-        .bottom-btn {
-            margin-top: auto; padding-top: 20px;
+        .submit-area { margin-top: auto; padding-bottom: 20px; }
+        .black-btn {
+            width: 100%; background: #000000; color: white;
+            border: none; padding: 20px; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 600; cursor: pointer;
+            transition: opacity 0.2s;
         }
-        .submit-btn {
-            width: 100%; background: #1d1d1f; color: white;
-            border: none; padding: 20px; border-radius: 18px;
-            font-size: 1.1rem; font-weight: 600; cursor: pointer;
-        }
+        .black-btn:active { opacity: 0.8; }
 
-        #result-page { 
+        #result-view { 
             display: none; position: fixed; inset: 0; 
-            background: white; z-index: 1000; padding: 30px 24px; 
-            overflow-y: auto; color: var(--text);
+            background: white; z-index: 2000; padding: 40px 24px; 
+            overflow-y: auto;
         }
-        .loading-text { display: none; text-align: center; font-weight: 500; color: #86868b; margin-top: 20px; }
+        .loading-hint { display: none; text-align: center; font-size: 0.9rem; color: #86868b; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -97,104 +102,102 @@
 <div class="main-card" id="app">
     <div class="header">体态深度评估</div>
 
-    <div class="auth-box">
-        <input type="text" id="activationCode" placeholder="输入 12-16 位激活码">
-        <div class="auth-tip">验证成功后将自动解锁 AI 深度报告</div>
+    <div class="auth-container">
+        <input type="text" id="activationCode" placeholder="输入 15 位激活码">
+        <div class="auth-tip">验证 543-618 协议后开启生成</div>
     </div>
 
-    <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width: 5%;"></div></div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width: 5%;"></div></div>
 
-    <div id="quiz-part">
-        <div class="section-label" id="quiz-step">STEP 1 / 20</div>
-        <div class="question-title" id="quiz-q">正在加载问题...</div>
-        <div class="opt-list" id="opts-box"></div>
+    <div id="quiz-step-view">
+        <div class="section-tag" id="step-counter">QUESTION 1 / 20</div>
+        <div class="question-text" id="q-display">正在准备评估...</div>
+        <div class="opt-group" id="opts-box"></div>
     </div>
 
-    <div id="status-part" style="display:none;">
-        <div class="section-label">最后一步</div>
-        <div class="question-title">补充您的身体感受或既往伤病</div>
-        <textarea id="extra-info" style="width:100%; border:1.5px solid #e5e5e7; border-radius:16px; height:120px; padding:15px; font-size:1rem;" placeholder="如：久坐颈椎酸痛、膝盖弹响等..."></textarea>
+    <div id="status-step-view" style="display:none;">
+        <div class="section-tag">FINAL STEP</div>
+        <div class="question-text">补充您的身体感受</div>
+        <textarea id="extra-notes" style="width:100%; border:1px solid #d2d2d7; border-radius:14px; height:150px; padding:15px; font-size:1rem; outline: none;" placeholder="例：脖子经常僵硬、右侧肩膀高..."></textarea>
     </div>
 
-    <div class="bottom-btn">
-        <button class="submit-btn" id="final-btn" onclick="handleVerify()" style="display:none;">立即生成深度分析</button>
-        <div id="loading" class="loading-text">🚀 AI 正在处理您的体态模型...</div>
+    <div class="submit-area">
+        <button class="black-btn" id="gen-btn" onclick="processVerify()" style="display:none;">生成评估报告</button>
+        <div id="loader" class="loading-hint">🚀 AI 正在构建纠正方案...</div>
     </div>
 </div>
 
-<div id="result-page">
-    <div id="md-body" style="line-height: 1.8;"></div>
-    <button onclick="location.reload()" style="width:100%; padding:18px; border:none; background:#f5f7fa; border-radius:16px; font-weight:600; margin-top:40px;">完成并退出</button>
+<div id="result-view">
+    <div id="report-content" style="line-height: 1.8;"></div>
+    <button onclick="location.reload()" style="width:100%; padding:18px; border:1px solid #d2d2d7; background:white; border-radius:14px; font-weight:600; margin-top:40px; color:#1d1d1f;">完成并退出</button>
 </div>
 
 <script>
-    const DEEPSEEK_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 记得填入你的 Key
+    const DEEPSEEK_KEY = "sk-d37975a862d84a7580adf1759cee3a1a"; // 🚨 填入 sk- 开头的 Key
 
     const questions = [
-        { q: "您的主要性别？", opts: ["女生", "男生"] },
-        { q: "侧身观察，耳垂是否明显在肩膀前方？", opts: ["头前伸（手机颈）", "基本垂直", "不确定"] },
-        { q: "自然站立时，手掌心的默认朝向？", opts: ["向后（圆肩代偿）", "向内侧（正常）", "略微向后"] },
-        { q: "镜子中观察，锁骨的整体线条？", opts: ["明显的 V 型", "平直的一字型", "看不清/不明显"] },
-        { q: "双肩是否有明显的高低不一？", opts: ["左肩偏高", "右肩偏高", "基本持平"] },
-        { q: "靠墙站立，后脑勺能否自然贴墙？", opts: ["贴不到", "轻松贴到", "贴到但感觉脖子发紧"] },
-        { q: "腰部与墙面的空隙大小？", opts: ["可塞进整个拳头", "可塞进一个手掌", "几乎完全贴合"] },
-        { q: "是否有“四肢不胖但小腹凸出”的情况？", opts: ["非常明显", "轻微", "完全没有"] },
-        { q: "是否有习惯性骨盆旋转（裤头歪）？", opts: ["有", "没有", "不确定"] },
-        { q: "并脚下蹲时，脚后跟能踩实地面吗？", opts: ["踩不实（会往后倒）", "轻松踩实", "比较勉强"] },
-        { q: "观察常穿的鞋底，磨损位置？", opts: ["外侧磨损严重", "内侧磨损严重", "磨损较均匀"] },
-        { q: "久坐一小时后，最先酸痛的位置？", opts: ["颈后/斜方肌", "下腰部/骶骨", "臀部/大腿后侧"] },
-        { q: "生活中是否有翘二郎腿的习惯？", opts: ["几乎一直翘", "偶尔会翘", "从不翘"] },
-        { q: "双手向后勾，指尖能否互相碰到？", opts: ["相差很远", "勉强碰到", "轻松扣住"] },
-        { q: "深呼吸时，观察身体起伏？", opts: ["只有胸口在动", "腹部明显起伏", "两者都有"] },
-        { q: "静态站立时，重心习惯偏向哪一边？", opts: ["左腿核心受力", "右腿核心受力", "双腿受力均匀"] },
-        { q: "背部肩胛骨是否像“小翅膀”般突起？", opts: ["明显凸起（翼状肩）", "平整贴合", "略微凸起"] },
-        { q: "转动脖子或肩膀时是否有响声？", opts: ["经常有响声", "完全没有", "偶尔会有"] },
-        { q: "每日低头处理手机/电脑的时长？", opts: ["8 小时以上", "4-8 小时", "4 小时以内"] },
-        { q: "练习环境偏好？", opts: ["居家（零器械）", "健身房（全器材）"] }
+        { q: "您的性别？", opts: ["女生", "男生"] },
+        { q: "侧身看，耳垂是否明显在肩膀前方？", opts: ["头前伸（手机颈）", "基本垂直", "不确定"] },
+        { q: "自然站立，手掌心的朝向？", opts: ["向后（圆肩）", "向大腿（正常）", "略偏后"] },
+        { q: "观察您的锁骨形状？", opts: ["明显的 V 型", "平直的一字型", "看不清/不明显"] },
+        { q: "双肩是否有明显的高低不一？", opts: ["左肩高", "右肩高", "基本平衡"] },
+        { q: "靠墙站立，后脑勺能否贴墙？", opts: ["贴不到", "轻松贴到", "贴到但吃力"] },
+        { q: "腰与墙面之间的间隙？", opts: ["一个拳头宽", "一个手掌宽", "几乎没缝隙"] },
+        { q: "是否有“四肢不胖但小腹凸出”？", opts: ["非常明显", "轻微", "完全没有"] },
+        { q: "裤头是否经常一边高一边低？", opts: ["是", "否", "没注意过"] },
+        { q: "并脚下蹲，脚后跟能踩死地面吗？", opts: ["不能（往后倒）", "轻松踩死", "比较勉强"] },
+        { q: "常穿的鞋底，磨损位置在？", opts: ["外侧磨损多", "内侧磨损多", "磨损均匀"] },
+        { q: "久坐后，身体哪部分最先疲劳？", opts: ["颈部/斜方肌", "下腰部", "臀腿部"] },
+        { q: "是否有翘二郎腿的习惯？", opts: ["经常翘", "偶尔翘", "从不翘"] },
+        { q: "双手向后勾，指尖能否相扣？", opts: ["差很远", "勉强碰到", "轻松相扣"] },
+        { q: "深呼吸时，观察身体起伏？", opts: ["胸口动", "肚子动", "都有"] },
+        { q: "单脚站立闭眼，能坚持10秒吗？", opts: ["很难", "勉强", "很稳"] },
+        { q: "肩胛骨是否像翅膀般凸起？", opts: ["是", "否", "轻微"] },
+        { q: "转动脖子是否有响声？", opts: ["经常响", "从不", "偶尔"] },
+        { q: "每天看手机的时长？", opts: ["8小时以上", "4-8小时", "4小时以内"] },
+        { q: "练习环境？", opts: ["居家（零器械）", "健身房"] }
     ];
 
     let currentIdx = 0;
     let answers = [];
 
-    function renderQuiz() {
+    function updateView() {
         const q = questions[currentIdx];
-        document.getElementById('quiz-step').innerText = `STEP ${currentIdx + 1} / 20`;
-        document.getElementById('quiz-q').innerText = q.q;
-        document.getElementById('prog-bar').style.width = ((currentIdx + 1) / 20) * 100 + '%';
+        document.getElementById('step-counter').innerText = `QUESTION ${currentIdx + 1} / 20`;
+        document.getElementById('q-display').innerText = q.q;
+        document.getElementById('prog-fill').style.width = ((currentIdx + 1) / 20) * 100 + '%';
         
         const box = document.getElementById('opts-box');
         box.innerHTML = '';
         q.opts.forEach(o => {
-            const div = document.createElement('div');
-            div.className = 'opt-item';
-            div.innerText = o;
-            div.onclick = () => {
-                answers.push(`${q.q}: ${o}`);
+            const btn = document.createElement('div');
+            btn.className = 'opt-btn'; btn.innerText = o;
+            btn.onclick = () => {
+                answers.push(o);
                 if(currentIdx < 19) {
-                    currentIdx++; renderQuiz();
+                    currentIdx++; updateView();
                 } else {
-                    document.getElementById('quiz-part').style.display = 'none';
-                    document.getElementById('status-part').style.display = 'block';
-                    document.getElementById('final-btn').style.display = 'block';
-                    document.getElementById('prog-bar').style.width = '100%';
+                    document.getElementById('quiz-step-view').style.display = 'none';
+                    document.getElementById('status-step-view').style.display = 'block';
+                    document.getElementById('gen-btn').style.display = 'block';
                 }
             };
-            box.appendChild(div);
+            box.appendChild(btn);
         });
     }
 
-    async function handleVerify() {
+    async function processVerify() {
         const code = document.getElementById('activationCode').value;
-        const parts = code.split('-');
-        if(parts.length !== 2) return alert("激活码格式错误（需包含一个横杠）");
+        const pts = code.split('-');
+        if(pts.length !== 2) return alert("激活码格式错误 (例: XXXXX-XXXXXX)");
 
-        const sum1 = parts[0].split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-        const sum2 = parts[1].split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+        const s1 = pts[0].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
+        const s2 = pts[1].split('').reduce((a,b)=>a+b.charCodeAt(0),0);
 
-        if(sum1 !== 543 || sum2 !== 618) return alert("激活码无效，请检查！");
+        if(s1 !== 543 || s2 !== 618) return alert("激活码校验不通过！");
 
-        document.getElementById('loading').style.display = 'block';
-        const extra = document.getElementById('extra-info').value;
+        document.getElementById('loader').style.display = 'block';
+        const extra = document.getElementById('extra-notes').value;
 
         try {
             const res = await fetch("https://api.deepseek.com/chat/completions", {
@@ -203,21 +206,20 @@
                 body: JSON.stringify({
                     model: "deepseek-chat",
                     messages: [
-                        {role: "system", content: "你是一位精通体态纠正的专家。"},
-                        {role: "user", content: `测评数据：${answers.join('; ')}。现状：${extra}。请给出一份专业的纠正报告。`}
+                        {role: "system", content: "你是一位专业私教。用Markdown提供30天纠正报告。"},
+                        {role: "user", content: `数据：${answers.join('; ')}。补充：${extra}`}
                     ]
                 })
             });
             const data = await res.json();
-            document.getElementById('md-body').innerHTML = marked.parse(data.choices[0].message.content);
-            document.getElementById('result-page').style.display = 'block';
+            document.getElementById('report-content').innerHTML = marked.parse(data.choices[0].message.content);
+            document.getElementById('result-view').style.display = 'block';
         } catch(e) {
-            alert("请求失败，请检查 API 配置或网络。");
-            document.getElementById('loading').style.display = 'none';
+            alert("生成失败，请重试");
+            document.getElementById('loader').style.display = 'none';
         }
     }
-
-    window.onload = renderQuiz;
+    window.onload = updateView;
 </script>
 </body>
 </html>
